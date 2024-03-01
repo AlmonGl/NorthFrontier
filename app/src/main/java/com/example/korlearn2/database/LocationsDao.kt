@@ -1,0 +1,52 @@
+package com.example.korlearn2.database
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+
+
+@Dao
+interface LocationsDao {
+
+
+    @Query ("SELECT * FROM Location")
+    suspend fun getLocation(): List<Location>
+    @Query ("SELECT * FROM Location WHERE rulerName = 'null'")
+    suspend fun getLocationsWithoutRuler(): List<Location>
+    @Query ("SELECT * FROM Location WHERE id = :id")
+    suspend fun getLocationById(id: Int): Location
+    @Query ("SELECT rulerName FROM Location WHERE rulerName != 'null'")
+    suspend fun getRulersOnLocations(): List<String>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLocation(location: Location)
+    @Update
+    suspend fun updateLocation(location: Location)
+
+    @Query ("SELECT * FROM LocalRuler")
+    suspend fun getLocalRuler(): List<LocalRuler>
+    @Query ("SELECT * FROM LocalRuler WHERE id = :id")
+    suspend fun getLocalRulerById(id: Int): LocalRuler
+    @Query ("SELECT * FROM LocalRuler WHERE rulerName NOT IN (:occupied)")
+    suspend fun getFreeLocalRulers(occupied: List<String>): List<LocalRuler>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLocalRuler(localRuler: LocalRuler)
+    @Update
+    suspend fun updateLocalRuler(localRuler: LocalRuler)
+
+    @Query ("SELECT * FROM Squad")
+    suspend fun getSquad(): List<Squad>
+    @Query ("SELECT rulerName FROM Squad WHERE rulerName != 'null'")
+    suspend fun getRulersOnSquads(): List<String>
+    @Query ("SELECT * FROM Squad WHERE id = :id")
+    suspend fun getSquadById(id: Int): Squad
+    @Query ("SELECT * FROM Squad WHERE rulerName = 'null'")
+    suspend fun getSquadsWithoutRuler(): List<Squad>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSquad(squad: Squad)
+    @Update
+    suspend fun updateSquad(squad: Squad)
+
+
+}
