@@ -13,6 +13,9 @@ interface LocationsDao {
 
     @Query ("SELECT * FROM Location")
     suspend fun getLocation(): List<Location>
+
+    @Query ("SELECT id FROM Location")
+    suspend fun getLocationsIdList(): List<Int>
     @Query ("SELECT * FROM Location WHERE rulerName = 'null'")
     suspend fun getLocationsWithoutRuler(): List<Location>
     @Query ("SELECT * FROM Location WHERE id = :id")

@@ -1,6 +1,5 @@
 package com.example.korlearn2.ViewModel
 
-import android.media.Image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import android.net.Uri
-import com.example.korlearn2.database.DataSome
+
 
 class LocationViewModel(): ViewModel() {
     var imageID by mutableIntStateOf(1)
@@ -17,16 +16,14 @@ class LocationViewModel(): ViewModel() {
         private set
     var uri: Uri? by mutableStateOf(null)
         private set
-    var text: String by mutableStateOf("")
+    var locationID: String by mutableStateOf("")
+    var locationsID by mutableStateOf(listOf(0))
     var text1: String by mutableStateOf("")
     fun changeBGcolor(){
         backgroundColor = Color.Red
 
     }
-    fun compute(){
-        text += DataSome.items.toString()
 
-    }
     fun changeImage(id: Int){
         imageID=id
     }

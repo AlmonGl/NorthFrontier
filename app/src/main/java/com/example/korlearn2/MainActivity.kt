@@ -1,40 +1,30 @@
 package com.example.korlearn2
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusTargetModifierNode
-import androidx.compose.ui.res.painterResource
-import coil.compose.AsyncImage
-import androidx.compose.ui.unit.Dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.korlearn2.ViewModel.LocationViewModel
 //import com.example.korlearn2.ViewModel.LocationVmFactory
 import com.example.korlearn2.ui.theme.KorLearn2Theme
@@ -42,13 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.example.korlearn2.database.AppDatabase
-import com.example.korlearn2.database.LocalRuler
-import com.example.korlearn2.database.Location
 import com.example.korlearn2.database.LocationsDao
-import com.example.korlearn2.database.Squad
 import com.example.korlearn2.database.generateAll
+import com.example.korlearn2.database.nextMonth
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 
 class MainActivity : ComponentActivity() {
@@ -59,36 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //checkURIonImage(intent,viewModel)
         val dao = AppDatabase.getInstance(this).locationDao
-
-        val locations = listOf(
-            Location(1,"London", "Gerold"),
-            Location(2,"Paris", "null"),
-            Location(3,"Milan", "null")
-        )
-        val localRulers = listOf(
-
-            LocalRuler(1,"Gerold"),
-            LocalRuler(2,"Andrew"),
-            LocalRuler(3,"Toolchain"),
-            LocalRuler(4,"Jon"),
-            LocalRuler(6,"Jac"),
-            LocalRuler(7,"Lori"),
-            LocalRuler(8,"Mads"),
-            LocalRuler(9,"Henry")
-        )
-        val squads = listOf(
-            Squad(1,"null","null",30),
-            Squad(2,"null","null",20),
-            Squad(3,"null","null",24),
-            Squad(4,"null","null",15)
-        )
-
-
-        lifecycleScope.launch {
-            locations.forEach { dao.insertLocation(it) }
-            localRulers.forEach { dao.insertLocalRuler(it) }
-            squads.forEach { dao.insertSquad(it) }
-        }
+        lifecycleScope.launch {viewModel.locationsID =dao.getLocationsIdList() }
 
         println("onCreate")
         setContent {
@@ -96,22 +54,33 @@ class MainActivity : ComponentActivity() {
                 Column (modifier = Modifier.fillMaxSize(),
 
                 ) {
-                    Text(text = viewModel.text)
-                    TextField(
-                        value = viewModel.text,
-                        onValueChange = {viewModel.text = it},
 
-                    )
+
+
+                    LocationList(locationsID = viewModel.locationsID, viewModel = viewModel )
+
                     InfoButtons(lifecycleScope = lifecycleScope, dao = dao, viewModel = viewModel)
-                    Button(
-                        onClick =
-                        {
+                    Row {
+                        Button(
+                            onClick =
+                            {
 
-                            generateAll(lifecycleScope,dao,viewModel)
+                                generateAll(lifecycleScope, dao, viewModel)
 
+                            }
+                        ) {
+                            Text(text = "generate new game")
                         }
-                    ) {
-                        Text(text = "generate")
+                        Button(
+                            onClick =
+                            {
+
+                               nextMonth(lifecycleScope, dao, viewModel)
+
+                            }
+                        ) {
+                            Text(text = "next month")
+                        }
                     }
                     Text(text = viewModel.text1)
                     /*Text(text = viewModel.text)
@@ -223,6 +192,31 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
         onClick =
         {
 
+
+            val locationId = try {
+                    viewModel.locationID.toInt()
+            }
+            catch (e: Exception){
+                0
+            }
+
+
+                if (locationId in 1..3) {
+                    lifecycleScope.launch {
+
+                        viewModel.text1 = dao.getLocationById(locationId).showAllData()
+                    }
+                }
+
+
+        }
+    ) {
+        Text(text = "Display location X")
+    }
+    Button(
+        onClick =
+        {
+
             lifecycleScope.launch {
                 var s: String = "Locations"
                 dao.getLocation().forEach {
@@ -266,6 +260,60 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+fun LocationList(
+    locationsID: List<Int>,
+    viewModel: LocationViewModel
+
+) {
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf("Select Location") }
+    LocalSoftwareKeyboardController.current?.hide()
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp)
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            TextField(
+                value = selectedText,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+
+
+
+                    locationsID.forEach { item ->
+                        DropdownMenuItem(
+                            text = { Text(text = item.toString()) },
+                            onClick = {
+                                selectedText = item.toString()
+                                viewModel.locationID=item.toString()
+                                expanded = false
+
+                            }
+                        )
+
+                }
+            }
+        }
+    }
+}
 /*@Composable
 fun ShowImage(id: Int) {
     if (id==1) {
