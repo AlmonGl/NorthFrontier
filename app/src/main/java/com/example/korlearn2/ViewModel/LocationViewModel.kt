@@ -17,6 +17,7 @@ class LocationViewModel(): ViewModel() {
     var uri: Uri? by mutableStateOf(null)
         private set
     var locationID: String by mutableStateOf("")
+
     var locationsID by mutableStateOf(listOf(0))
     var text1: String by mutableStateOf("")
     fun changeBGcolor(){

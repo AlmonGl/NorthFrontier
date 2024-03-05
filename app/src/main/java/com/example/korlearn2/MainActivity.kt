@@ -4,12 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,7 +68,7 @@ class MainActivity : ComponentActivity() {
                             onClick =
                             {
 
-                                generateAll(lifecycleScope, dao, viewModel)
+                                generateAll(lifecycleScope, dao, viewModel,applicationContext)
 
                             }
                         ) {
@@ -82,7 +85,7 @@ class MainActivity : ComponentActivity() {
                             Text(text = "next month")
                         }
                     }
-                    Text(text = viewModel.text1)
+                    Text(text = viewModel.text1, modifier = Modifier.verticalScroll(ScrollState(0)))
                     /*Text(text = viewModel.text)
                     Button(
                         onClick =
@@ -201,7 +204,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             }
 
 
-                if (locationId in 1..3) {
+                if (locationId in 1..25) {
                     lifecycleScope.launch {
 
                         viewModel.text1 = dao.getLocationById(locationId).showAllData()
@@ -218,7 +221,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
         {
 
             lifecycleScope.launch {
-                var s: String = "Locations"
+                var s = "Locations"
                 dao.getLocation().forEach {
                     s = s.plus("\n").plus(it.id).plus(" ").plus(it.locationName)
                         .plus(" ").plus(it.rulerName)
@@ -234,9 +237,9 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
         {
 
             lifecycleScope.launch {
-                var s: String = "Leaders:"
+                var s = "Leaders:"
                 dao.getLocalRuler().forEach {
-                    s = s.plus("\n").plus(it.id).plus(" ").plus(it.rulerName)
+                    s = s.plus("\n").plus(it.showFullInfo())
                 }
                 viewModel.text1 = s
             }
@@ -247,8 +250,21 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
     Button(
         onClick =
         {
+
             lifecycleScope.launch {
-                var s: String = "Squads:"
+                var s = "Your stats:"
+
+                viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()}"
+            }
+        }
+    ) {
+        Text(text = "Your stats")
+    }
+    Button(
+        onClick =
+        {
+            lifecycleScope.launch {
+                var s = "Squads:"
                 dao.getSquad().forEach {
                     s+= "\n${it.id}st. Leader: ${it.rulerName}, Location: ${it.locationName}, ${it.number} soldiers."
                 }
@@ -301,6 +317,7 @@ fun LocationList(
                     locationsID.forEach { item ->
                         DropdownMenuItem(
                             text = { Text(text = item.toString()) },
+
                             onClick = {
                                 selectedText = item.toString()
                                 viewModel.locationID=item.toString()
@@ -308,6 +325,7 @@ fun LocationList(
 
                             }
                         )
+
 
                 }
             }

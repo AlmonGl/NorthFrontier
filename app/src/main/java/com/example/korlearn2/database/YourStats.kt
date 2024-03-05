@@ -1,10 +1,28 @@
 package com.example.korlearn2.database
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 
 @Entity
 data class YourStats (
-    var gold: Int,
-    var age: Int
-)
+    @PrimaryKey
+    val name: String = "YourName"
+
+){
+    var monthNumber = 1
+    var yearNumber = 1000
+    var gold: Int = (1000..1500).random()
+    var age: Int = (58..60).random()
+    var loan: Int = (1000..10000).random()
+    var taxesThisMonth: Int = 0
+    var taxesLastMonth: Int = 0
+    var loanPercent: Int = 0
+
+    fun showAllData(): String{
+        return  "Year/Month: ${yearNumber}/${monthNumber} \n" +
+                "Gold: $gold, Age: $age, Loan: $loan\n Taxes this month = $taxesThisMonth \n" +
+                " Taxes last month = $taxesLastMonth" +
+                "\n Percent last month =  $loanPercent"
+    }
+}

@@ -10,10 +10,9 @@ import androidx.room.Update
 @Dao
 interface LocationsDao {
 
-
+    /////LOCATION/////////
     @Query ("SELECT * FROM Location")
     suspend fun getLocation(): List<Location>
-
     @Query ("SELECT id FROM Location")
     suspend fun getLocationsIdList(): List<Int>
     @Query ("SELECT * FROM Location WHERE rulerName = 'null'")
@@ -26,18 +25,20 @@ interface LocationsDao {
     suspend fun insertLocation(location: Location)
     @Update
     suspend fun updateLocation(location: Location)
-
+    /////LEADERS/////////
     @Query ("SELECT * FROM LocalRuler")
     suspend fun getLocalRuler(): List<LocalRuler>
     @Query ("SELECT * FROM LocalRuler WHERE id = :id")
     suspend fun getLocalRulerById(id: Int): LocalRuler
+    @Query ("SELECT * FROM LocalRuler WHERE rulerName = :rulerName")
+    suspend fun getLocalRulerByName(rulerName: String): LocalRuler
     @Query ("SELECT * FROM LocalRuler WHERE rulerName NOT IN (:occupied)")
     suspend fun getFreeLocalRulers(occupied: List<String>): List<LocalRuler>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocalRuler(localRuler: LocalRuler)
     @Update
     suspend fun updateLocalRuler(localRuler: LocalRuler)
-
+    /////SQUADS/////////
     @Query ("SELECT * FROM Squad")
     suspend fun getSquad(): List<Squad>
     @Query ("SELECT rulerName FROM Squad WHERE rulerName != 'null'")
@@ -50,6 +51,19 @@ interface LocationsDao {
     suspend fun insertSquad(squad: Squad)
     @Update
     suspend fun updateSquad(squad: Squad)
+    /////YOUR_STATS/////////
+    @Query ("SELECT * FROM YourStats")
+    suspend fun getYourStats(): List<YourStats>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertYourStats(yourStats: YourStats)
+    @Update
+    suspend fun updateYourStats(yourStats: YourStats)
 
-
+    /////ENEMY_STATS/////////
+    @Query ("SELECT * FROM EnemyStats")
+    suspend fun getEnemyStats(): List<EnemyStats>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEnemyStats(enemyStats: EnemyStats)
+    @Update
+    suspend fun updateEnemyStats(enemyStats: EnemyStats)
 }
