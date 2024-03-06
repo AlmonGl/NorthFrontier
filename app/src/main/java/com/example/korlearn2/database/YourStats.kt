@@ -15,14 +15,14 @@ data class YourStats (
     var gold: Int = (1000..1500).random()
     var age: Int = (58..60).random()
     var loan: Int = (1000..10000).random()
-    var taxesThisMonth: Int = 0
-    var taxesLastMonth: Int = 0
+    var taxesBeforeLastYear: Int = 0
+    var taxesLastYear: Int = 0
     var loanPercent: Int = 0
 
     fun showAllData(): String{
         return  "Year/Month: ${yearNumber}/${monthNumber} \n" +
-                "Gold: $gold, Age: $age, Loan: $loan\n Taxes this month = $taxesThisMonth \n" +
-                " Taxes last month = $taxesLastMonth" +
+                "Gold: $gold, Age: $age, Loan: $loan\n Taxes last year = $taxesLastYear \n" +
+                " Taxes before last year = $taxesBeforeLastYear" +
                 "\n Percent last month =  $loanPercent"
     }
 }
