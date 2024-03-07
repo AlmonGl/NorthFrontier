@@ -12,9 +12,9 @@ data class YourStats (
 ){
     var monthNumber = 1
     var yearNumber = 1000
-    var gold: Int = (1000..1500).random()
+    var gold: Int = 10000
     var age: Int = (58..60).random()
-    var loan: Int = (1000..10000).random()
+    var loan: Int = 0
     var taxesBeforeLastYear: Int = 0
     var taxesLastYear: Int = 0
     var loanPercent: Int = 0

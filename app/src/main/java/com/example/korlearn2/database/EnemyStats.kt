@@ -9,5 +9,9 @@ data class EnemyStats(
     val id: Int = 1
 ) {
     var enemyReservePower = (5000..30000).random()
-    var enemyAvangardPower = (500..3000).random()
+    var enemyAvangardPower = 15000
+    var raidedLast=""
+    fun showAllData(): String {
+        return "Reserve: $enemyReservePower\n Avangard: $enemyAvangardPower. Raided last $raidedLast"
+    }
 }

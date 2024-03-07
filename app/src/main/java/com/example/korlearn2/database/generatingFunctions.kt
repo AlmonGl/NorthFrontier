@@ -37,7 +37,10 @@ fun generateAll(
 
 
     lifecycleScope.launch {
-        locations.forEach { dao.insertLocation(it) }
+        locations.forEach {
+            it.generate()
+            dao.insertLocation(it)
+        }
         localRulers.forEach { dao.insertLocalRuler(it) }
         squads.forEach { dao.insertSquad(it) }
 
@@ -70,9 +73,33 @@ fun nextMonth(
     dao: LocationsDao,
     viewModel: LocationViewModel
 ) {
-    raids(lifecycleScope, dao, viewModel)
-    lifecycleScope.launch {
 
+    lifecycleScope.launch {
+        ////raids
+        val enemyStats = dao.getEnemyStats()[0]
+        enemyStats.raidedLast=""
+        val raidSize =
+            (enemyStats.enemyAvangardPower / 100..enemyStats.enemyAvangardPower / 50).random()
+        var numberOfLocations = (3..5).random()
+        while (numberOfLocations > 1) {
+            val seed = (1..100).random()
+            var locationID = 0
+            when (seed) {
+                in (1..50) -> locationID = (1..5).random()
+                in (51..75) -> locationID = (6..10).random()
+                in (76..90) -> locationID = (11..15).random()
+                in (91..98) -> locationID = (16..20).random()
+                in (99..100) -> locationID = (21..25).random()
+            }
+            val location = dao.getLocationById(locationID)
+            //enemyStats.enemyAvangardPower -= raidSize //TEMPORARY
+            enemyStats.raidedLast+= " $locationID"
+            location.incomingBarbarians += raidSize
+            numberOfLocations--
+            dao.updateLocation(location)
+        }
+        dao.updateEnemyStats(enemyStats)
+        ////raids
         val stats = dao.getYourStats()[0]
         stats.monthNumber += 1
         if (stats.monthNumber == 13) {
@@ -85,8 +112,9 @@ fun nextMonth(
         dao.getLocation().forEach { it ->
             val ruler = dao.getLocalRulerByName(it.rulerName)
             //TO REMOVE
-            it.plannedCivilFunds = it.workersExeptNatural * 2
+            it.plannedCivilFunds = (it.workersExeptNatural * 1.1).toInt()
             it.plannedMilitaryFunds = it.militaryLvl
+            stats.gold-=(it.plannedCivilFunds+it.plannedMilitaryFunds)
             //TO REMOVE
             ///MILITARY
             it.militaryFunds += it.plannedMilitaryFunds * (100 - ruler.fundsDecrease) / 100
@@ -125,10 +153,12 @@ fun nextMonth(
                 it.locationCoffer -= (it.workersExeptNatural - it.civilFunds)
             } else if (it.workersExeptNatural > it.civilFunds) {
                 it.civilLvl -= 1
+                if (it.civilLvl<1) it.civilLvl=1
             }
 
             it.civilFunds = 0
             ///RESOLVE RAIDS
+            it.barbariansLastMonth = it.incomingBarbarians
             if (it.incomingBarbarians != 0) {
                 var militaryPower = it.militia + it.feudalPower
                 dao.getSquadsInLocation(it.locationName).forEach {
@@ -146,20 +176,45 @@ fun nextMonth(
 
                 it.incomingBarbarians = 0
                 if (it.barbarianRaids > 100) it.barbarianRaids = 100
-                if (it.barbarianRaids < 1) it.barbarianRaids = 1
+                if (it.barbarianRaids < 0) it.barbarianRaids = 0
             }
             ///TAXES
 
             if (stats.monthNumber == 1) {
                 it.taxesBeforeLastYear = it.taxesLastYear
                 it.taxesLastYear = 0
-                it.climateLastYear = arrayListOf(-5,-4,-3,-2,-2,-1,-1,-1,-1,0,0,0,0,0,0,1,1,1,1,2,2,3,4,5).random()
+                it.climateLastYear = arrayListOf(
+                    -5,
+                    -4,
+                    -3,
+                    -2,
+                    -2,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    2,
+                    2,
+                    3,
+                    4,
+                    5
+                ).random()
                 var climateInfluence = it.climateLastYear
-                if (climateInfluence < 0) climateInfluence = 0
-                //TAXES
+                if ((climateInfluence < 0) and ruler.climateAdapting) climateInfluence = 0
+
                 var naturalProduction =
-                    (it.civilLvl  + 80)  * it.workersNatural * it.fertility *
-                            (climateInfluence + 6)  * (101 - it.barbarianRaids) / 60000 - it.workersAll / 2
+                    (it.civilLvl + 70) * it.workersNatural * it.fertility *
+                            (climateInfluence + 6) * (101 - it.barbarianRaids) / 60000 - it.workersAll / 2
                 if (naturalProduction < 0) {
                     if (ruler.giveFromCofferIfStarvation) {
                         if (it.locationCoffer + naturalProduction >= 0) {
@@ -174,18 +229,36 @@ fun nextMonth(
                     naturalProduction = 0
                 }
                 val commoditiesProduction =
-                    ((it.civilLvl * 3 + 50) / 10) * it.workersCommodities * ((it.fertility + 1) / 2) * ((climateInfluence + 6) / 6) * 2
-                val profProduction = it.workersProfs * it.civilLvl * 5
-                val tradeProduction =
-                    it.workersTraders * (it.civilLvl.toDouble().pow(1.7).toInt())
+                    (it.civilLvl + 100) * it.workersCommodities * (it.fertility + 1) *
+                            (climateInfluence + 6) * 3 * (101 - it.barbarianRaids) / 120000
+                val profProduction = it.workersProfs * it.civilLvl
+                val tradeProduction = it.workersTraders * it.civilLvl
                 val extractionProduction =
-                    it.abundance * it.workersExtraction * 6 * (it.civilLvl  + 25) / 100
+                    it.abundance * it.workersExtraction * 5 * (it.civilLvl + 25) * (101 - it.barbarianRaids) / 10000
                 it.taxesLastYear =
                     ((naturalProduction + commoditiesProduction + profProduction + tradeProduction +
-                            extractionProduction) * (101 - it.crimeInfluence)  * (101 - it.barbarianRaids)) / 10000
+                            extractionProduction) * (101 - it.crimeInfluence) * (101 - it.barbarianRaids)) / 10000
                 if (it.taxesLastYear > 0) stats.taxesLastYear += it.taxesLastYear
 
+                it.barbarianRaidsYearBefore = it.barbarianRaids
                 it.barbarianRaids = 0
+                it.commoditiesTaxesLastYear = commoditiesProduction
+                it.tradeTaxesLastYear = tradeProduction
+                it.professionsTaxesLastYear = profProduction
+                it.naturalTaxesLastYear = naturalProduction
+                it.extractionTaxesLastYear = extractionProduction
+
+                ///leader traits
+                if (ruler.profAttraction) it.workersProfs+=1
+                if (ruler.tradersAttraction) it.workersTraders+=1
+                if (ruler.agriAttraction) it.workersNatural+=10
+                if (ruler.extractionAttraction) it.workersExtraction+=5
+                if (ruler.commodityAttraction) it.workersCommodities+=5
+                it.crimeInfluence-=ruler.lawsAttitude
+                if (it.crimeInfluence<0) it.crimeInfluence=0
+                if (it.crimeInfluence>100) it.crimeInfluence=100
+
+
             }
             ///EVENTS
             //TODO("CHECK COFFER, THEN INITIATIVE, THEN OFFER MIL LVL INCREASE OR CIV LVL INCREASE (FOR x5 from maintained cost")
@@ -193,10 +266,10 @@ fun nextMonth(
 
         }
         if (stats.monthNumber == 1) stats.gold += stats.taxesLastYear
-        stats.loan += if (stats.loan >= 50) stats.loan / 50 else if (stats.loan in 1..49) 1 else 0
+        stats.loan += if (stats.loan >= 100) stats.loan / 100 else if (stats.loan in 1..99) 1 else 0
 
         stats.loanPercent =
-            if (stats.loan >= 100) stats.loan / 100 else if (stats.loan in 1..99) 1 else 0
+            if (stats.loan >= 80) stats.loan / 80 else if (stats.loan in 1..79) 1 else 0
         stats.loan -= stats.loanPercent
         stats.gold -= stats.loanPercent
         dao.updateYourStats(stats)
@@ -204,16 +277,17 @@ fun nextMonth(
 }
 
 
-@Transaction
+
 fun raids(
     lifecycleScope: LifecycleCoroutineScope,
     dao: LocationsDao,
     viewModel: LocationViewModel
 ) {
+
     lifecycleScope.launch {
         val enemyStats = dao.getEnemyStats()[0]
         val raidSize =
-            (enemyStats.enemyAvangardPower / 10..enemyStats.enemyAvangardPower / 5).random()
+            (enemyStats.enemyAvangardPower / 100..enemyStats.enemyAvangardPower / 50).random()
         var numberOfLocations = (3..5).random()
         while (numberOfLocations > 1) {
             val seed = (1..100).random()
@@ -225,13 +299,14 @@ fun raids(
                 in (91..98) -> locationID = (16..20).random()
                 in (99..100) -> locationID = (21..25).random()
             }
-            val location = dao.getLocationById(locationID)
+            var location = dao.getLocationById(locationID)
             enemyStats.enemyAvangardPower -= raidSize
+            enemyStats.raidedLast+= " $locationID"
             location.incomingBarbarians += raidSize
             numberOfLocations--
-            dao.insertLocation(location)
+            dao.updateLocation(location)
         }
-        dao.insertEnemyStats(enemyStats)
+        dao.updateEnemyStats(enemyStats)
 
     }
 

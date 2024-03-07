@@ -252,13 +252,13 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
         {
 
             lifecycleScope.launch {
-                var s = "Your stats:"
 
-                viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()}"
+
+                viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()} \n Enemy stats: ${dao.getEnemyStats()[0].showAllData()}"
             }
         }
     ) {
-        Text(text = "Your stats")
+        Text(text = "Stats")
     }
     Button(
         onClick =

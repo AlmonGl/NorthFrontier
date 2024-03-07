@@ -30,7 +30,7 @@ data class LocalRuler (
         var climateAdapting = seed == 5
 
         ///SEED 6-7 Laws attitude
-        var lawsAttitude = if (seed==6) (1..5).random() else if (seed==7) (-5..-1).random() else 0
+        var lawsAttitude = if (seed==6) (1..2).random() else if (seed==7) (-2..-1).random() else 0
 
         ///SEED 8 Traders attraction
         var tradersAttraction = seed==8
@@ -41,23 +41,41 @@ data class LocalRuler (
         ///SEED 10 Agri attraction
         var agriAttraction = seed==10
 
-        ///SEED 11 Commoditu attraction
+        ///SEED 11 Commodity attraction
         var commodityAttraction = seed==11
 
         ///SEED 12 Extraction attraction
         var extractionAttraction = seed==12
 
-        ///SEED 13 Religious
+        ///SEED 13 Religious//something with church
         var religious = seed==13
 
-        ///SEED 14 Vigilant
+        ///SEED 14 Vigilant //something with raids resolve?
         var vigilant = seed==14
 
         //SEED 15 Cruel
         var giveFromCofferIfStarvation = seed!=14
 
         fun showFullInfo():String {
-                return "$id. $rulerName, Seed $seed, greed $decreaseCofferIncoming, corruption $fundsDecrease, laws $lawsAttitude" +
-                        "\nInit civil competence: $initiative, $civilCompetence"
+               var s = "$id. $rulerName, "
+                when (seed) {
+                    1-> s+= "Stinginess"
+                    2-> s+= "Greed $decreaseCofferIncoming"
+                    3-> s+= "Corruption $fundsDecrease"
+                    4-> s+=  "Military enthusiast"
+                    5-> s+= "Climate adapting"
+                    6-> s+= "Lawful"
+                    7-> s+= "Perpetrator"
+                    8-> s+= "Traders attraction"
+                    9-> s+= "Prof attraction"
+                    10-> s+= "Agri attraction"
+                    11-> s+= "Commodity attraction"
+                    12-> s+= "Extraction attraction"
+                    13-> s+= "Religious"
+                    14-> s+= "Vigilant"
+                    15-> s+= "Cruel"
+
+                }
+                return  s
         }
 }
