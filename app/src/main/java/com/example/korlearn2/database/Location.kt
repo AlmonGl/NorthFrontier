@@ -52,10 +52,10 @@ data class Location (
     var professionsTaxesLastYear = 0 //fog 2
 
     fun showAllData(): String{
-        var s = "Location: \n $locationName"
+        var s = "Location: $locationName, ID_$id, ruled by $rulerName."
         if (town) s+=" Town with $militia militia"
         if (manor) s+=" Manor with $feudalPower solders"
-        s+= " \n ruled by $rulerName.\n coffer: $locationCoffer. Loyalty: $locationLoyalty"
+        s+= " \n\n coffer: $locationCoffer. Loyalty: $locationLoyalty"
         s+="\n Workers: Nat $workersNatural Ex $workersExtraction Prof $workersProfs Trade $workersTraders Comm $workersCommodities ALL: $workersAll"
         s+="\n Civlvl $civilLvl Millvl $militaryLvl civFunds $civilFunds Milfunds $militaryFunds"
         s+= "\n Fert $fertility Abun $abundance Starv $starvation Climate $climateLastYear Fog $fogOfWar"

@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,26 +27,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.korlearn2.ViewModel.LocationViewModel
 //import com.example.korlearn2.ViewModel.LocationVmFactory
 import com.example.korlearn2.ui.theme.KorLearn2Theme
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.korlearn2.database.AppDatabase
 import com.example.korlearn2.database.LocationsDao
 import com.example.korlearn2.database.generateAll
 import com.example.korlearn2.database.nextMonth
+import com.example.korlearn2.view.SetupNavGraph
 import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<LocationViewModel>()
-
+    lateinit var navController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //checkURIonImage(intent,viewModel)
@@ -53,100 +62,19 @@ class MainActivity : ComponentActivity() {
 
         println("onCreate")
         setContent {
-            KorLearn2Theme {
-                Column (modifier = Modifier.fillMaxSize(),
-
-                ) {
-
-
-
-                    LocationList(locationsID = viewModel.locationsID, viewModel = viewModel )
-
-                    InfoButtons(lifecycleScope = lifecycleScope, dao = dao, viewModel = viewModel)
-                    Row {
-                        Button(
-                            onClick =
-                            {
-
-                                generateAll(lifecycleScope, dao, viewModel,applicationContext)
-
-                            }
-                        ) {
-                            Text(text = "generate new game")
-                        }
-                        Button(
-                            onClick =
-                            {
-
-                               nextMonth(lifecycleScope, dao, viewModel)
-
-                            }
-                        ) {
-                            Text(text = "next month")
-                        }
-                    }
-                    Text(text = viewModel.text1, modifier = Modifier.verticalScroll(ScrollState(0)))
-                    /*Text(text = viewModel.text)
-                    Button(
-                        onClick =
-                        { viewModel.compute() }
-                    ) {
-                        Text(text = "Do something")
-                    }*/
-                    /*viewModel.uri?.let {
-                        AsyncImage(
-                            model = viewModel.uri,
-                            contentDescription = null
-                        )
-                    }*/
-                    /*ShowImage(viewModel.imageID)
-                    Button(
-                        onClick = {
-                            viewModel.changeBGcolor()
-                            viewModel.changeImage(2)
-
-                        },
-                        modifier = Modifier
-                            .height(100.dp)
-                            .width(100.dp),
-                    ) {
-                        Text(text = "Change Color")
-                    }*/
-                    /*Button(
-                        onClick = {
-                            /*Intent(this, SecondActivity::class.java).also {
-                            startActivity(it)
-                            }
-                            */
-                            /*Intent(Intent.ACTION_MAIN).also {
-                                it.`package` = "com.google.android.youtbe"
-                                try {
-                                    startActivity(it)
-                                } catch (e: ActivityNotFoundException){
-                                    e.printStackTrace()
-                                }
-                            }*/
-                            val intent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_EMAIL, arrayOf("meil@meil.ro"))
-                                putExtra(Intent.EXTRA_SUBJECT, "arrayOf")
-                                putExtra(Intent.EXTRA_TEXT, "HI")
-                            }
-                            if (intent.resolveActivity(packageManager) != null) {
-                                startActivity(intent)
-                            }
-                        },
-                        modifier = Modifier
-                            .size(100.dp, 100.dp)
-
-                    ) {
-                        Text(text = "Another screen")
-                    }*/
-                }
+                navController = rememberNavController()
+                SetupNavGraph(
+                    navController = navController,
+                    dao = dao,
+                    viewModel = viewModel,
+                    lifecycleScope = lifecycleScope,
+                    context = applicationContext
+                )
 
 
 
-            }
+
+
         }
     }
 
@@ -221,6 +149,19 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
         {
 
             lifecycleScope.launch {
+
+
+                viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()} \n Enemy stats: ${dao.getEnemyStats()[0].showAllData()}"
+            }
+        }
+    ) {
+        Text(text = "Stats")
+    }
+    Button(
+        onClick =
+        {
+
+            lifecycleScope.launch {
                 var s = "Locations"
                 dao.getLocation().forEach {
                     s = s.plus("\n").plus(it.id).plus(" ").plus(it.locationName)
@@ -247,19 +188,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
     ) {
         Text(text = "Display rulers")
     }
-    Button(
-        onClick =
-        {
 
-            lifecycleScope.launch {
-
-
-                viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()} \n Enemy stats: ${dao.getEnemyStats()[0].showAllData()}"
-            }
-        }
-    ) {
-        Text(text = "Stats")
-    }
     Button(
         onClick =
         {
@@ -277,61 +206,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
-@Composable
-fun LocationList(
-    locationsID: List<Int>,
-    viewModel: LocationViewModel
 
-) {
-
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("Select Location") }
-    LocalSoftwareKeyboardController.current?.hide()
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp)
-    ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {
-                expanded = !expanded
-            }
-        ) {
-            TextField(
-                value = selectedText,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor()
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-
-
-
-                    locationsID.forEach { item ->
-                        DropdownMenuItem(
-                            text = { Text(text = item.toString()) },
-
-                            onClick = {
-                                selectedText = item.toString()
-                                viewModel.locationID=item.toString()
-                                expanded = false
-
-                            }
-                        )
-
-
-                }
-            }
-        }
-    }
-}
 /*@Composable
 fun ShowImage(id: Int) {
     if (id==1) {
