@@ -26,7 +26,7 @@ fun MapScreen(
         contentAlignment = Alignment.Center)
     {
         Text(
-            text = "Map",
+            text = "Map1",
             fontSize = MaterialTheme.typography.headlineLarge.fontSize,
 
             )
