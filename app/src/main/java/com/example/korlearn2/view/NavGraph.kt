@@ -43,6 +43,12 @@ fun SetupNavGraph(
         {
             MainInfoScreen(navController,lifecycleScope,viewModel,dao,context)
         }
+        composable(
+            route = Screen.SquadsAndSpies.route
+        )
+        {
+            SquadsAndSpiesScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
     }
 
 }

@@ -195,7 +195,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             lifecycleScope.launch {
                 var s = "Squads:"
                 dao.getSquad().forEach {
-                    s+= "\n${it.id}st. Leader: ${it.rulerName}, Location: ${it.locationName}, ${it.number} soldiers."
+                    s+= "\n${it.id}st. Leader: ${it.rulerName}, Location: ${it.locationId}, ${it.number} soldiers."
                 }
                 viewModel.text1 = s
             }

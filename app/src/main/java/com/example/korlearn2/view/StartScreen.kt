@@ -47,6 +47,7 @@ fun StartScreen(
                 modifier = Modifier.clickable {
                     generateAll(lifecycleScope, dao, viewModel, context)
                     viewModel.text1 = ""
+                    viewModel.selectedLocationId=-1
                     navController.navigate(Screen.MainInfo.route)
                 }
 

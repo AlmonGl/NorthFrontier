@@ -88,11 +88,22 @@ fun MainInfoScreen(
                 onClick =
                 {
 
-                    generateAll(lifecycleScope, dao, viewModel, context)
+                    navController.navigate(Screen.SquadsAndSpies.route)
 
                 }
             ) {
-                Text(text = "generate new game")
+                Text(text = "Assigning screen")
+            }
+            Button(
+
+                onClick =
+                {
+
+                    navController.navigate(Screen.Map.route)
+
+                }
+            ) {
+                Text(text = "Map screen")
             }
             Button(
                 onClick =
@@ -189,6 +200,10 @@ fun LocationMosaic(
                         viewModel.text1 = dao
                             .getLocationById(1)
                             .showAllData()
+                        dao.getSquadsInLocation(1).forEach {
+                            viewModel.text1+= "\n${it.showAllData()}"
+                        }
+                        viewModel.selectedLocationId=1
                     }
                 })
             Text(text = " 2 ", fontSize = 32.sp, fontFamily= FontFamily.Cursive, modifier = Modifier
@@ -199,6 +214,10 @@ fun LocationMosaic(
                         viewModel.text1 = dao
                             .getLocationById(2)
                             .showAllData()
+                        dao.getSquadsInLocation(2).forEach {
+                            viewModel.text1+= "\n${it.showAllData()}"
+                        }
+                        viewModel.selectedLocationId=2
                     }
                 })
             Text(text = " 3 ", fontSize = 32.sp, fontFamily= FontFamily.Cursive, modifier = Modifier
@@ -209,6 +228,10 @@ fun LocationMosaic(
                         viewModel.text1 = dao
                             .getLocationById(3)
                             .showAllData()
+                        dao.getSquadsInLocation(3).forEach {
+                            viewModel.text1+= "\n${it.showAllData()}"
+                        }
+                        viewModel.selectedLocationId=3
                     }
                 })
             Text(text = " 4 ", fontSize = 32.sp, fontFamily= FontFamily.Cursive, modifier = Modifier
@@ -219,6 +242,10 @@ fun LocationMosaic(
                         viewModel.text1 = dao
                             .getLocationById(4)
                             .showAllData()
+                        dao.getSquadsInLocation(4).forEach {
+                            viewModel.text1+= "\n${it.showAllData()}"
+                        }
+                        viewModel.selectedLocationId=4
                     }
                 })
             Text(text = " 5 ", fontSize = 32.sp, fontFamily= FontFamily.Cursive, modifier = Modifier
@@ -229,6 +256,10 @@ fun LocationMosaic(
                         viewModel.text1 = dao
                             .getLocationById(5)
                             .showAllData()
+                        dao.getSquadsInLocation(5).forEach {
+                            viewModel.text1+= "\n${it.showAllData()}"
+                        }
+                        viewModel.selectedLocationId=5
                     }
                 })
         }

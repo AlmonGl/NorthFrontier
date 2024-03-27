@@ -29,10 +29,10 @@ fun generateAll(
 
 
     val squads = listOf(
-        Squad(1, "null", "null", 30),
-        Squad(2, "null", "null", 20),
-        Squad(3, "null", "null", 24),
-        Squad(4, "null", "null", 15)
+        Squad(1,  "null", 30),
+        Squad(2,  "null", 20),
+        Squad(3,  "null", 24),
+        Squad(4,  "null", 15)
     )
 
 
@@ -161,7 +161,7 @@ fun nextMonth(
             it.barbariansLastMonth = it.incomingBarbarians
             if (it.incomingBarbarians != 0) {
                 var militaryPower = it.militia + it.feudalPower
-                dao.getSquadsInLocation(it.locationName).forEach {
+                dao.getSquadsInLocation(it.id).forEach {
                     militaryPower += it.number
                 }
                 if (militaryPower == 0) {

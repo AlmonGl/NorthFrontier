@@ -20,6 +20,10 @@ class LocationViewModel(): ViewModel() {
 
     var locationsID by mutableStateOf(listOf(0))
     var text1: String by mutableStateOf("")
+    var selectedLocationId: Int by mutableStateOf(-1)
+    var selectedSquad: Int by mutableStateOf(1)
+    var selectedSquadInfo: String by mutableStateOf("")
+    var selectedSpy: Int by mutableStateOf(1)
     fun changeBGcolor(){
         backgroundColor = Color.Red
 
