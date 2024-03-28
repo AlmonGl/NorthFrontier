@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -31,8 +32,12 @@ import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import com.example.korlearn2.ViewModel.LocationViewModel
 //import com.example.korlearn2.ViewModel.LocationVmFactory
 import com.example.korlearn2.ui.theme.KorLearn2Theme
@@ -40,12 +45,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.korlearn2.database.AppDatabase
 import com.example.korlearn2.database.LocationsDao
 import com.example.korlearn2.database.generateAll
 import com.example.korlearn2.database.nextMonth
+import com.example.korlearn2.view.Screen
 import com.example.korlearn2.view.SetupNavGraph
 import kotlinx.coroutines.launch
 
@@ -205,8 +212,39 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
     }
 }
 
+@Composable
+fun BackGround(id: Int){
+    Box(modifier = Modifier.fillMaxSize()){
+        val p: Painter = when (id) {
+            1-> painterResource(id = R.drawable.im1)
+            2-> painterResource(id = R.drawable.im2)
+            3-> painterResource(id = R.drawable.im3)
+            4-> painterResource(id = R.drawable.im4)
+            else -> painterResource(id = R.drawable.im5)
+        }
+        Image(
+            painter = p,
+            contentDescription = "",
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.5f),
+            contentScale = ContentScale.Crop
 
+        )
 
+    }
+}
+
+@Composable
+fun BackButton(navController: NavController){
+    Button(
+        onClick = { navController.navigate(Screen.MainInfo.route) }) {
+        Text(
+            text = "Back",
+            fontSize = 25.sp
+        )
+    }
+}
 /*@Composable
 fun ShowImage(id: Int) {
     if (id==1) {

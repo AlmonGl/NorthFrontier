@@ -28,7 +28,7 @@ class LocationViewModel(): ViewModel() {
         backgroundColor = Color.Red
 
     }
-
+    var squadIdList: List<Int> = listOf()
     fun changeImage(id: Int){
         imageID=id
     }

@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
+import com.example.korlearn2.BackButton
+import com.example.korlearn2.BackGround
 import com.example.korlearn2.ViewModel.LocationViewModel
 import com.example.korlearn2.database.LocationsDao
 
@@ -25,13 +27,13 @@ fun MapScreen(
     dao: LocationsDao,
     context: Context
 ) {
+    BackGround(4)
+    BackButton(navController)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-        Button(onClick = { navController.navigate(Screen.MainInfo.route) }) {
-            Text(text = "Back", fontSize = 25.sp)
-        }
+
         Text(
             text = "Map1",
             fontSize = MaterialTheme.typography.headlineLarge.fontSize,

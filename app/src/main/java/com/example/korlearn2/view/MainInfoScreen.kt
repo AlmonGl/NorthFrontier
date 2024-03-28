@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
+import com.example.korlearn2.BackGround
 import com.example.korlearn2.InfoButtons
 
 import com.example.korlearn2.ViewModel.LocationViewModel
@@ -49,6 +50,7 @@ import com.example.korlearn2.database.LocationsDao
 import com.example.korlearn2.database.generateAll
 import com.example.korlearn2.database.nextMonth
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 
 @Composable
 fun MainInfoScreen(
@@ -58,11 +60,12 @@ fun MainInfoScreen(
     dao: LocationsDao,
     context: Context
 ) {
+    BackGround(3)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF535353)),
+            .fillMaxSize(),
+           // .background(Color(0xFF535353)),
         verticalArrangement = Arrangement.Top
 
     )
@@ -88,6 +91,13 @@ fun MainInfoScreen(
                 onClick =
                 {
 
+                    val listId= mutableListOf<Int>()
+                    lifecycleScope.launch {
+                        dao.getSquad().forEach {
+                            listId.add(it.id)
+                        }
+                    }
+                    viewModel.squadIdList = listId
                     navController.navigate(Screen.SquadsAndSpies.route)
 
                 }

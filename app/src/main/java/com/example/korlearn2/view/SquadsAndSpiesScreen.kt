@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
+import com.example.korlearn2.BackButton
+import com.example.korlearn2.BackGround
 import com.example.korlearn2.ViewModel.LocationViewModel
 import com.example.korlearn2.database.LocationsDao
 import com.example.korlearn2.database.Squad
@@ -35,25 +37,25 @@ fun SquadsAndSpiesScreen(
     dao: LocationsDao,
     context: Context
 ) {
+    BackGround(id = 2)
     Column(horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF535353)),
+            .fillMaxSize(),
+            //.background(Color(0xFF535353)),
         verticalArrangement = Arrangement.Top) {
-    Button(onClick = { navController.navigate(Screen.MainInfo.route) }, modifier = Modifier.background(
-        PurpleNew)) {
-        Text(text = "Back", fontSize = 25.sp)
-        }
+    BackButton(navController)
     LocationMosaic(viewModel = viewModel, lifecycleScope = lifecycleScope, dao = dao)
     Row() {
         Text(text = "Assign squad number ${viewModel.selectedSquad.toString()} to location #${viewModel.selectedLocationId.toString()}",color = Color(0xFFA9B7C6), fontSize = 25.sp)
         }
         Button(onClick = {
-            if ((viewModel.selectedSquad!=-1) and (viewModel.selectedLocationId!=-1))
-            lifecycleScope.launch {
+            if ((viewModel.selectedSquad!=-1)&&(viewModel.selectedLocationId!=-1))
+            {
+                lifecycleScope.launch {
                 val squad: Squad = dao.getSquadById(viewModel.selectedSquad)
                 squad.locationId=viewModel.selectedLocationId
                 dao.updateSquad(squad)
+                }
             }
         }) {
             Text(text = "assing")
@@ -62,7 +64,7 @@ fun SquadsAndSpiesScreen(
     Spacer(modifier = Modifier.height(30.dp))
     Text(text = viewModel.selectedSquadInfo,color = Color(0xFFA9B7C6), fontSize = 25.sp )
     Spacer(modifier = Modifier.height(30.dp))
-    SquadsMosaic(viewModel = viewModel, lifecycleScope = lifecycleScope, dao = dao, squadNumber = listOf(1,2,3,4))
+    SquadsMosaic(viewModel = viewModel, lifecycleScope = lifecycleScope, dao = dao, squadNumber = viewModel.squadIdList)
     }
 }
 @Composable
