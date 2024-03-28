@@ -68,7 +68,11 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {viewModel.locationsID =dao.getLocationsIdList() }
 
         println("onCreate")
+
+
+
         setContent {
+            KorLearn2Theme {
                 navController = rememberNavController()
                 SetupNavGraph(
                     navController = navController,
@@ -80,9 +84,9 @@ class MainActivity : ComponentActivity() {
 
 
 
-
-
         }
+        }
+
     }
 
     override fun onResume() {
@@ -126,31 +130,7 @@ class MainActivity : ComponentActivity() {
 }
 @Composable
 fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, viewModel: LocationViewModel){
-    Button(
-        onClick =
-        {
 
-
-            val locationId = try {
-                    viewModel.locationID.toInt()
-            }
-            catch (e: Exception){
-                0
-            }
-
-
-                if (locationId in 1..25) {
-                    lifecycleScope.launch {
-
-                        viewModel.text1 = dao.getLocationById(locationId).showAllData()
-                    }
-                }
-
-
-        }
-    ) {
-        Text(text = "Display location X")
-    }
     Button(
         onClick =
         {
@@ -178,7 +158,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             }
         }
     ) {
-        Text(text = "Display locations")
+        Text(text = "Loc. list")
     }
     Button(
         onClick =
@@ -193,7 +173,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             }
         }
     ) {
-        Text(text = "Display rulers")
+        Text(text = "Ruler list")
     }
 
     Button(
@@ -208,7 +188,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             }
         }
     ) {
-        Text(text = "Display squads")
+        Text(text = "Squad list")
     }
 }
 

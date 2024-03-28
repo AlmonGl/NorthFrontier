@@ -24,9 +24,9 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color.Red,
+    primary = PurpleNew,
     secondary = PurpleGrey40,
-    onPrimary = Color.Red,
+    onPrimary = Color.White,
     tertiary = Pink40
 
     /* Other default colors to override
@@ -66,7 +66,8 @@ fun KorLearn2Theme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        //colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

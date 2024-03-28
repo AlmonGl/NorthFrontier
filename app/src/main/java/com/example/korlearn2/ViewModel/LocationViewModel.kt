@@ -23,11 +23,12 @@ class LocationViewModel(): ViewModel() {
     var selectedLocationId: Int by mutableStateOf(-1)
     var selectedSquad: Int by mutableStateOf(1)
     var selectedSquadInfo: String by mutableStateOf("")
-    var selectedSpy: Int by mutableStateOf(1)
+
     fun changeBGcolor(){
         backgroundColor = Color.Red
 
     }
+
     var squadIdList: List<Int> = listOf()
     fun changeImage(id: Int){
         imageID=id

@@ -12,7 +12,7 @@ data class LocalRuler (
     ) {
         var initiative = (0..10).random()
         var civilCompetence = (1..10).random()
-        var seed = (1..15).random()
+        var seed = (1..16).random()
         var description = "Traits are:"
         ///SEED 1 - Stinginess
         var addCivilShortageFromCoffer = seed != 1
@@ -56,6 +56,9 @@ data class LocalRuler (
         //SEED 15 Cruel
         var giveFromCofferIfStarvation = seed!=14
 
+        //SEED 16 Embezzle
+        var embezzlement = if (seed==16) arrayListOf(1,1,1,1,1,2,2,2,2,3,3,3,4,4,5,6).random() else 0
+
         fun showFullInfo():String {
                var s = "$id. $rulerName, "
                 when (seed) {
@@ -74,6 +77,7 @@ data class LocalRuler (
                     13-> s+= "Religious"
                     14-> s+= "Vigilant"
                     15-> s+= "Cruel"
+                    16-> s+= "Embezzle $embezzlement"
 
                 }
                 return  s

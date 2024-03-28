@@ -101,6 +101,7 @@ fun nextMonth(
         dao.updateEnemyStats(enemyStats)
         ////raids
         val stats = dao.getYourStats()[0]
+        ///CALENDAR
         stats.monthNumber += 1
         if (stats.monthNumber == 13) {
             stats.monthNumber = 1
@@ -108,7 +109,14 @@ fun nextMonth(
             stats.taxesBeforeLastYear = stats.taxesLastYear
             stats.taxesLastYear = 0
         }
-
+        ////SPYING
+        if (stats.spyOnLocation!=-1){
+            val locSpying = dao.getLocationById(stats.spyOnLocation)
+            locSpying.fogOfWar++
+            if (locSpying.fogOfWar>5)  locSpying.fogOfWar=5
+            dao.updateLocation(locSpying)
+        }
+        ////FOR EACH LOCATION
         dao.getLocation().forEach { it ->
             val ruler = dao.getLocalRulerByName(it.rulerName)
             //TO REMOVE
@@ -238,6 +246,7 @@ fun nextMonth(
                 it.taxesLastYear =
                     ((naturalProduction + commoditiesProduction + profProduction + tradeProduction +
                             extractionProduction) * (101 - it.crimeInfluence) * (101 - it.barbarianRaids)) / 10000
+                it.taxesLastYear = it.taxesLastYear - (it.taxesLastYear*ruler.embezzlement)/10
                 if (it.taxesLastYear > 0) stats.taxesLastYear += it.taxesLastYear
 
                 it.barbarianRaidsYearBefore = it.barbarianRaids

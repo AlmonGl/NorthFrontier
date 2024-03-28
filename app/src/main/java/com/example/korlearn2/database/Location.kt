@@ -28,7 +28,7 @@ data class Location (
     var militaryLvl: Int = 0//if (id in 1..5) (10..30).random() else (0..10).random() //0-100 //fog 3 //if id on frontier
     var militia: Int = 0//if (town) (10..20).random() else 0
     var feudalPower: Int = 0//if (manor) (50..100).random() else 0
-    var civilFunds: Int = 0 //gold //fog 4
+    var civilFunds: Int = 0 //gold //always 0 outside of nextMonth function
     var militaryFunds: Int = 0 //gold //fog 4
     var fertility: Int = arrayListOf(1,1,1,1,1,1,2,2,2,3).random() //1-35 //fog 2
     var abundance: Int = arrayListOf(1,1,1,1,1,1,2,2,2,3).random() //1-3 //fog 2
@@ -44,7 +44,7 @@ data class Location (
     var taxesLastYear = 0 //fog 0
     var taxesBeforeLastYear = 0 //fog 0
     var incomingBarbarians = 0 ////fog 6
-    var barbariansLastMonth = 0 //fog 4
+    var barbariansLastMonth = 0 //fog 1
     var naturalTaxesLastYear = 0 //fog 2
     var extractionTaxesLastYear = 0 //fog 2
     var commoditiesTaxesLastYear = 0 //fog 2
@@ -67,6 +67,53 @@ data class Location (
         s+= "\n Barbarians this/last year: $barbarianRaids/$barbarianRaidsYearBefore"
         s+= "\n Barbarians last month: $barbariansLastMonth"
         return s
+    }
+    fun showFogData(): String {
+        var s = "Location: $locationName, ID_$id, \nruled by $rulerName, infoLVL $fogOfWar"
+        ///FOG==0
+        if (town) s += " Town with $militia militia"
+        if (manor) s += " Manor with $feudalPower solders"
+        s += "\n\n Taxes last year $taxesLastYear gold"
+        s += "\n Taxes before last year $taxesBeforeLastYear gold"
+        s += "\n\n Planned civilian funding: $plannedCivilFunds gold."
+        s += "\n Planned military funding: $plannedMilitaryFunds gold."
+        ///FOG==1
+        if (fogOfWar >= 1) {
+            s += "\n\n Barbarians this year: $barbarianRaids"
+            s += "\n Barbarians last year: $barbarianRaidsYearBefore"
+            s += "\n Barbarians last month: $barbariansLastMonth"
+            s += "\n Climate last year: $climateLastYear"
+            s += "\n\n Population: $workersAll \n " +
+                    "Agriculture: $workersNatural\n Extraction: $workersExtraction\n Professions $workersProfs\n Traders: $workersTraders\n Commodities: $workersCommodities  "
+        }
+        ///FOG==2
+        if (fogOfWar >= 2) {
+            s += "\n\n Fertility: $fertility \n Natural abundance: $abundance "
+            s += "\n\n Base taxes last year: $taxesLastYearBase "
+            s += "\n Taxes natural: $naturalTaxesLastYear gold.\n Taxes extraction: $extractionTaxesLastYear gold."
+            s += "\n Taxes trade: $tradeTaxesLastYear gold.\n Taxes prof: $professionsTaxesLastYear gold."
+            s += "\n Taxes commodities: $commoditiesTaxesLastYear gold. "
+        }
+        ///FOG==3
+        if (fogOfWar >= 3) {
+            s += "\n\n Civilian infrastructure: $civilLvl\n Military infrastructure: $militaryLvl"
+        }
+        ///FOG==4
+        if (fogOfWar >= 4) {
+            s += "\n\n Stored military funds: $militaryFunds gold"
+            s+="\n Crime :$crimeInfluence %\n Church: $churchInfluence %"
+        }
+        ///FOG==5
+        if (fogOfWar >= 5) {
+            s += " \n\n Coffer: $locationCoffer gold. \nLoyalty: $locationLoyalty% ."
+        }
+
+
+
+
+        return s
+
+
     }
     fun generate() {
         val seed = (1..100).random()
@@ -163,4 +210,6 @@ data class Location (
         get() = workersNatural+workersCommodities+workersExtraction+workersProfs+workersTraders
     val workersExeptNatural: Int
         get() = workersCommodities+workersExtraction+workersProfs+workersTraders
+    val taxesLastYearBase: Int
+        get() = naturalTaxesLastYear+extractionTaxesLastYear+commoditiesTaxesLastYear+tradeTaxesLastYear+professionsTaxesLastYear
 }
