@@ -28,7 +28,13 @@ class LocationViewModel(): ViewModel() {
         backgroundColor = Color.Red
 
     }
-
+    var currentDate = ""
+    var locAttacked = ""
+    var rulersActionsLastMonth = ""
+    var rulersActionsMonthBeforeLast = ""
+    var locationWithCivDec = ""
+    var locationWithMilDec = ""
+    var numberOfRequests = 0
     var squadIdList: List<Int> = listOf()
     fun changeImage(id: Int){
         imageID=id

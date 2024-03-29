@@ -79,9 +79,9 @@ data class Location (
         s += "\n Planned military funding: $plannedMilitaryFunds gold."
         ///FOG==1
         if (fogOfWar >= 1) {
-            s += "\n\n Barbarians this year: $barbarianRaids"
-            s += "\n Barbarians last year: $barbarianRaidsYearBefore"
-            s += "\n Barbarians last month: $barbariansLastMonth"
+            s += "\n\n Barbarians this year: $barbarianRaids %"
+            s += "\n Barbarians last year: $barbarianRaidsYearBefore %"
+            s += "\n Barbarians last month: $barbariansLastMonth mens"
             s += "\n Climate last year: $climateLastYear"
             s += "\n\n Population: $workersAll \n " +
                     "Agriculture: $workersNatural\n Extraction: $workersExtraction\n Professions $workersProfs\n Traders: $workersTraders\n Commodities: $workersCommodities  "

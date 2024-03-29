@@ -49,6 +49,18 @@ fun SetupNavGraph(
         {
             SquadsAndSpiesScreen(navController,lifecycleScope,viewModel,dao,context)
         }
+        composable(
+            route = Screen.Month.route
+        )
+        {
+            MonthScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
+        composable(
+            route = Screen.Locations.route
+        )
+        {
+            LocationsScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
     }
 
 }

@@ -139,6 +139,9 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
 
 
                 viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()} \n Enemy stats: ${dao.getEnemyStats()[0].showAllData()}"
+                viewModel.text1+="\n\nReport last month: \n ${viewModel.rulersActionsMonthBeforeLast}"
+                viewModel.text1+="\n\n${viewModel.locationWithCivDec}"
+                viewModel.text1+="\n${viewModel.locationWithMilDec}"
             }
         }
     ) {

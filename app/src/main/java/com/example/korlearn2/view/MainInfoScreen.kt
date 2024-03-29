@@ -131,8 +131,9 @@ fun MainInfoScreen(
             Button(
                 onClick =
                 {
-
                     nextMonth(lifecycleScope, dao, viewModel)
+                    navController.navigate(Screen.Month.route)
+
 
                 }
             ) {

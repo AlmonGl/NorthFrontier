@@ -10,7 +10,7 @@ data class LocalRuler (
         val rulerName: String
 
     ) {
-        var initiative = (0..10).random()
+        var initiative = (0..10).random() //0 initiative never spend coffer
         var civilCompetence = (1..10).random()
         var seed = (1..16).random()
         var description = "Traits are:"
@@ -80,6 +80,7 @@ data class LocalRuler (
                     16-> s+= "Embezzle $embezzlement"
 
                 }
+                s+= ", $initiative init, $civilCompetence civ "
                 return  s
         }
 }

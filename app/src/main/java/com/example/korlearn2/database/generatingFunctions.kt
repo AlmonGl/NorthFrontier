@@ -74,6 +74,8 @@ fun nextMonth(
     viewModel: LocationViewModel
 ) {
 
+    viewModel.locationWithCivDec = "Rumors of civilian infrastructure degrade in:"
+    viewModel.locationWithMilDec = "Rumors of military infrastructure degrade in:"
     lifecycleScope.launch {
         ////raids
         val enemyStats = dao.getEnemyStats()[0]
@@ -93,11 +95,12 @@ fun nextMonth(
             }
             val location = dao.getLocationById(locationID)
             //enemyStats.enemyAvangardPower -= raidSize //TEMPORARY
-            enemyStats.raidedLast+= " $locationID"
+            enemyStats.raidedLast+= "$locationID, "
             location.incomingBarbarians += raidSize
             numberOfLocations--
             dao.updateLocation(location)
         }
+        viewModel.locAttacked =enemyStats.raidedLast
         dao.updateEnemyStats(enemyStats)
         ////raids
         val stats = dao.getYourStats()[0]
@@ -109,6 +112,7 @@ fun nextMonth(
             stats.taxesBeforeLastYear = stats.taxesLastYear
             stats.taxesLastYear = 0
         }
+        viewModel.currentDate = "Year ${stats.yearNumber}, Month ${stats.monthNumber}."
         ////SPYING
         if (stats.spyOnLocation!=-1){
             val locSpying = dao.getLocationById(stats.spyOnLocation)
@@ -119,11 +123,11 @@ fun nextMonth(
         ////FOR EACH LOCATION
         dao.getLocation().forEach { it ->
             val ruler = dao.getLocalRulerByName(it.rulerName)
-            //TO REMOVE
+            //GET GOLD FROM YOUR STATS, TO REMOVE
             it.plannedCivilFunds = (it.workersExeptNatural * 1.1).toInt()
             it.plannedMilitaryFunds = it.militaryLvl
             stats.gold-=(it.plannedCivilFunds+it.plannedMilitaryFunds)
-            //TO REMOVE
+            //
             ///MILITARY
             it.militaryFunds += it.plannedMilitaryFunds * (100 - ruler.fundsDecrease) / 100
             it.plannedMilitaryFunds = 0
@@ -146,6 +150,7 @@ fun nextMonth(
                         }
                     }
                     it.militaryLvl -= decreaseLvl
+                    if (it.fogOfWar>=3) viewModel.locationWithMilDec+=" ${it.id},"
                     if (it.militaryLvl <= 0) it.militaryLvl = 1
                 }
                 it.militaryFunds = 0
@@ -161,6 +166,7 @@ fun nextMonth(
                 it.locationCoffer -= (it.workersExeptNatural - it.civilFunds)
             } else if (it.workersExeptNatural > it.civilFunds) {
                 it.civilLvl -= 1
+                if (it.fogOfWar>=3) viewModel.locationWithCivDec+=" ${it.id},"
                 if (it.civilLvl<1) it.civilLvl=1
             }
 
@@ -269,8 +275,30 @@ fun nextMonth(
 
 
             }
+            //starvation to do
+            ///AUTO INCREASE
+            if (it.locationCoffer>=it.workersExeptNatural*5){
+                if((1..10).random()>=ruler.initiative)
+                {
+                     when ((0..10).random()) {
+                         in 0..7 -> {
+                             it.locationCoffer-=it.workersExeptNatural*3
+                             it.civilLvl+=1
+                             viewModel.rulersActionsLastMonth+="\n In ${it.id}, ${it.locationName} civilian infrastructure has been increased by 1 level"
+                         }
+                         in 8..10-> {
+                             if (it.locationCoffer>=it.militaryLvl*24) {
+                                 it.locationCoffer-=it.militaryLvl*24
+                                 it.militaryLvl+=1
+                                 viewModel.rulersActionsLastMonth+="\n In ${it.id}, ${it.locationName} military infrastructure has been increased by 1 level"
+                             }
+                         }
+
+
+                     }
+                }
+            }
             ///EVENTS
-            //TODO("CHECK COFFER, THEN INITIATIVE, THEN OFFER MIL LVL INCREASE OR CIV LVL INCREASE (FOR x5 from maintained cost")
             dao.updateLocation(it)
 
         }
