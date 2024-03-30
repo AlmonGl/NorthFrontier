@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import android.net.Uri
+import androidx.compose.runtime.remember
 
 
 class LocationViewModel(): ViewModel() {
@@ -34,12 +35,16 @@ class LocationViewModel(): ViewModel() {
     var rulersActionsMonthBeforeLast = ""
     var locationWithCivDec = ""
     var locationWithMilDec = ""
+    var locationsCivUpkeep = arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    var locationsMilUpkeep= arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+
     var numberOfRequests = 0
     var squadIdList: List<Int> = listOf()
-    fun changeImage(id: Int){
-        imageID=id
+    fun updateCiv(array: Array<Int>){
+        locationsCivUpkeep = array
     }
-    fun updateUri(ur: Uri?) {
-        uri = ur
+    fun updateMil(array: Array<Int>){
+        locationsMilUpkeep = array
     }
 }

@@ -123,9 +123,9 @@ fun nextMonth(
         ////FOR EACH LOCATION
         dao.getLocation().forEach { it ->
             val ruler = dao.getLocalRulerByName(it.rulerName)
-            //GET GOLD FROM YOUR STATS, TO REMOVE
-            it.plannedCivilFunds = (it.workersExeptNatural * 1.1).toInt()
-            it.plannedMilitaryFunds = it.militaryLvl
+            //GET GOLD FROM YOUR STATS
+            if (it.plannedCivilFunds<0) it.plannedCivilFunds=0
+            if (it.plannedMilitaryFunds<0) it.plannedMilitaryFunds=0
             stats.gold-=(it.plannedCivilFunds+it.plannedMilitaryFunds)
             //
             ///MILITARY

@@ -205,6 +205,8 @@ data class Location (
             militaryLvl = (15..35).random()
             locationCoffer+= (1000..3000).random()
         }
+        plannedCivilFunds = (workersExeptNatural * 1.2).toInt()
+        plannedMilitaryFunds = militaryLvl
     }
     val workersAll: Int
         get() = workersNatural+workersCommodities+workersExtraction+workersProfs+workersTraders

@@ -61,6 +61,12 @@ fun SetupNavGraph(
         {
             LocationsScreen(navController,lifecycleScope,viewModel,dao,context)
         }
+        composable(
+            route = Screen.Upkeep.route
+        )
+        {
+            UpkeepScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
     }
 
 }

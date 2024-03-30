@@ -131,6 +131,25 @@ fun MainInfoScreen(
             Button(
                 onClick =
                 {
+                    lifecycleScope.launch {
+                    dao.getLocation().forEach {
+                        viewModel.locationsCivUpkeep[it.id]=it.plannedCivilFunds
+                        viewModel.locationsMilUpkeep[it.id]=it.plannedMilitaryFunds
+                    }
+
+                }
+                    navController.navigate(Screen.Upkeep.route)
+
+
+                }
+            ) {
+                Text(text = "Upkeep")
+            }
+        }
+        Row {
+            Button(
+                onClick =
+                {
                     nextMonth(lifecycleScope, dao, viewModel)
                     navController.navigate(Screen.Month.route)
 
@@ -269,8 +288,12 @@ fun LocationCard(
             .border(7.dp, MosaicBack)
             .clickable {
                 lifecycleScope.launch {
-                    viewModel.text1 = dao.getLocationById(id).showFogData()
-                    dao.getSquadsInLocation(id).forEach {
+                    viewModel.text1 = dao
+                        .getLocationById(id)
+                        .showFogData()
+                    dao
+                        .getSquadsInLocation(id)
+                        .forEach {
                             viewModel.text1 += "\n${it.showAllData()}"
                         }
                     viewModel.selectedLocationId = id
