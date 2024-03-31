@@ -17,7 +17,7 @@ data class Location (
     var manor: Boolean = false//(0..5).random() == 0 //fog 0
     var locationLoyalty: Int = (50..70).random() //0-100 //fog 5
     var locationCoffer: Int = (10..1000).random() //gold //fog 5
-
+    var depleted = false
 
     var workersNatural: Int = 0//(200..1000).random() //pop  //fog 1
     var workersExtraction: Int = 0//(100..400).random() //pop //fog 1
@@ -69,6 +69,7 @@ data class Location (
         return s
     }
     fun showFogData(): String {
+        if (depleted) return "Location: $locationName, ID_$id, is depleted"
         var s = "Location: $locationName, ID_$id, \nruled by $rulerName, infoLVL $fogOfWar"
         ///FOG==0
         if (town) s += " Town with $militia militia"
@@ -79,9 +80,9 @@ data class Location (
         s += "\n Planned military funding: $plannedMilitaryFunds gold."
         ///FOG==1
         if (fogOfWar >= 1) {
-            s += "\n\n Barbarians this year: $barbarianRaids %"
-            s += "\n Barbarians last year: $barbarianRaidsYearBefore %"
-            s += "\n Barbarians last month: $barbariansLastMonth mens"
+            s += "\n\n Barbarians razed $barbarianRaids % this year."
+            s += "\n Barbarians razed  $barbarianRaidsYearBefore % last year."
+            s += "\n Barbarians attacked last month: $barbariansLastMonth mens"
             s += "\n Climate last year: $climateLastYear"
             s += "\n\n Population: $workersAll \n " +
                     "Agriculture: $workersNatural\n Extraction: $workersExtraction\n Professions $workersProfs\n Traders: $workersTraders\n Commodities: $workersCommodities  "
@@ -214,4 +215,55 @@ data class Location (
         get() = workersCommodities+workersExtraction+workersProfs+workersTraders
     val taxesLastYearBase: Int
         get() = naturalTaxesLastYear+extractionTaxesLastYear+commoditiesTaxesLastYear+tradeTaxesLastYear+professionsTaxesLastYear
+    fun deplete() {
+        workersNatural=0
+        workersExtraction=0
+        workersTraders=0
+        workersCommodities=0
+        workersProfs=0
+    }
+    fun decreasePop(x1: Int) {
+        var x =x1
+        if (x>= workersAll) {
+            depleted=true
+            deplete()
+            return
+        }
+        if (workersNatural>=x) {
+            workersNatural-=x
+            return
+        } else {
+            x-=workersNatural
+            workersNatural=0
+        }
+        if (workersCommodities>=x){
+            workersCommodities-=x
+            return
+        } else {
+            x-=workersCommodities
+            workersCommodities=0
+        }
+        if (workersExtraction>=x){
+            workersExtraction-=x
+            return
+        } else {
+            x-=workersExtraction
+            workersExtraction=0
+        }
+        if (workersProfs>=x){
+            workersProfs-=x
+            return
+        } else {
+            x-=workersProfs
+            workersProfs=0
+        }
+        if (workersTraders>=x){
+            workersTraders-=x
+            return
+        } else {
+            depleted=true
+            deplete()
+        }
+    }
 }
+

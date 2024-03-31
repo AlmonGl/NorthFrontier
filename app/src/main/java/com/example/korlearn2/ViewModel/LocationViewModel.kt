@@ -31,14 +31,18 @@ class LocationViewModel(): ViewModel() {
     }
     var currentDate = ""
     var locAttacked = ""
-    var rulersActionsLastMonth = ""
+    var rulersActionsCivUp = "Civ. level increased in: "
+    var rulersActionsMilUp = "Mil. level increased in: "
     var rulersActionsMonthBeforeLast = ""
     var locationWithCivDec = ""
     var locationWithMilDec = ""
-    var locationsCivUpkeep = arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-    var locationsMilUpkeep= arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    var locationsCivUpkeep = arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
-
+    var locationsMilUpkeep= arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    var civUpkeepChange: Int by mutableIntStateOf(0)
+    var milUpkeepChange: Int by mutableIntStateOf(0)
+    var raidsReport = "Rumors about barbarian raids:"
+    var raidsReportBefore = ""
     var numberOfRequests = 0
     var squadIdList: List<Int> = listOf()
     fun updateCiv(array: Array<Int>){

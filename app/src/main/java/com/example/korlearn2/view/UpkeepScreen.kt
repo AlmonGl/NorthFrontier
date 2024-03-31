@@ -5,6 +5,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedButton
@@ -36,15 +37,15 @@ fun UpkeepScreen(navController: NavController,
 ) {
 
     BackGround(id = 2)
-    Column(modifier = Modifier.verticalScroll(ScrollState(0))) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         BackButton(navController)
-        Text(text = "Civilian infrastructure upkeep:")
-        for (i in 1..25) {
+        Text(text = "Civilian infrastructure upkeep: ${viewModel.locationsCivUpkeep.sum() + viewModel.civUpkeepChange}")
+        for (i in 1..16) {
             val x = viewModel.locationsCivUpkeep[i]
             LocationUpkeep(dao,lifecycleScope,viewModel,i,"Civ",x)
         }
-        Text(text = "Military infrastructure upkeep:")
-        for (i in 1..25) {
+        Text(text = "Military infrastructure upkeep: ${viewModel.locationsMilUpkeep.sum() + viewModel.milUpkeepChange}")
+        for (i in 1..16) {
             val x = viewModel.locationsMilUpkeep[i]
             LocationUpkeep(dao,lifecycleScope,viewModel,i,"Mil",x)
         }
@@ -104,6 +105,7 @@ fun changeUpkeep(dao: LocationsDao, lifecycleScope: LifecycleCoroutineScope,view
             "Mil" -> {
                 loc.plannedMilitaryFunds+=value
                 if (loc.plannedMilitaryFunds<0) loc.plannedMilitaryFunds=0
+                viewModel.milUpkeepChange+=value
                 /*val array = viewModel.locationsMilUpkeep
                 array[id]+=value
                 viewModel.updateMil(array)*/
@@ -114,6 +116,7 @@ fun changeUpkeep(dao: LocationsDao, lifecycleScope: LifecycleCoroutineScope,view
             "Civ" -> {
                 loc.plannedCivilFunds+=value
                 if (loc.plannedCivilFunds<0) loc.plannedCivilFunds=0
+                viewModel.civUpkeepChange+=value
                 /*val array = viewModel.locationsCivUpkeep
                 array[id]+=value
                 viewModel.updateCiv(array)*/

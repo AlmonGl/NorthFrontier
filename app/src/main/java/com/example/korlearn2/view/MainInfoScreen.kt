@@ -138,6 +138,8 @@ fun MainInfoScreen(
                     }
 
                 }
+                    viewModel.civUpkeepChange=0
+                    viewModel.milUpkeepChange=0
                     navController.navigate(Screen.Upkeep.route)
 
 
@@ -182,7 +184,7 @@ fun LocationMosaic(
 ) {
     Column(modifier = Modifier.background(MosaicBack)) {
         Row(modifier = Modifier.background(MosaicBack)) {
-            for (i in 1..5) LocationCard(
+            for (i in 1..4) LocationCard(
                 viewModel = viewModel,
                 lifecycleScope = lifecycleScope,
                 dao = dao,
@@ -190,7 +192,7 @@ fun LocationMosaic(
             )
         }
         Row(modifier = Modifier.background(MosaicBack)) {
-            for (i in 6..10) LocationCard(
+            for (i in 5..8) LocationCard(
                 viewModel = viewModel,
                 lifecycleScope = lifecycleScope,
                 dao = dao,
@@ -198,7 +200,7 @@ fun LocationMosaic(
             )
         }
         Row(modifier = Modifier.background(MosaicBack)) {
-            for (i in 11..15) LocationCard(
+            for (i in 9..12) LocationCard(
                 viewModel = viewModel,
                 lifecycleScope = lifecycleScope,
                 dao = dao,
@@ -206,21 +208,14 @@ fun LocationMosaic(
             )
         }
         Row(modifier = Modifier.background(MosaicBack)) {
-            for (i in 16..20) LocationCard(
+            for (i in 13..16) LocationCard(
                 viewModel = viewModel,
                 lifecycleScope = lifecycleScope,
                 dao = dao,
                 id = i
             )
         }
-        Row(modifier = Modifier.background(MosaicBack)) {
-            for (i in 21..25) LocationCard(
-                viewModel = viewModel,
-                lifecycleScope = lifecycleScope,
-                dao = dao,
-                id = i
-            )
-        }
+
     }
 }
 

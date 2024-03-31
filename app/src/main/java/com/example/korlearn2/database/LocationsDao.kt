@@ -21,6 +21,8 @@ interface LocationsDao {
     suspend fun getLocationById(id: Int): Location
     @Query ("SELECT rulerName FROM Location WHERE rulerName != 'null'")
     suspend fun getRulersOnLocations(): List<String>
+    @Query("SELECT id FROM Location WHERE depleted = 'false'")
+    suspend fun getNotDepletedLocations() : List<Int>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocation(location: Location)
     @Update

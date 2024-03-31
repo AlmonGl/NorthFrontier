@@ -142,6 +142,8 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
                 viewModel.text1+="\n\nReport last month: \n ${viewModel.rulersActionsMonthBeforeLast}"
                 viewModel.text1+="\n\n${viewModel.locationWithCivDec}"
                 viewModel.text1+="\n${viewModel.locationWithMilDec}"
+                viewModel.text1+="\n${viewModel.raidsReportBefore}"
+
             }
         }
     ) {
@@ -185,7 +187,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             lifecycleScope.launch {
                 var s = "Squads:"
                 dao.getSquad().forEach {
-                    s+= "\n${it.id}st. Leader: ${it.rulerName}, Location: ${it.locationId}, ${it.number} soldiers."
+                    s = s.plus("\n").plus(it.showAllData())
                 }
                 viewModel.text1 = s
             }

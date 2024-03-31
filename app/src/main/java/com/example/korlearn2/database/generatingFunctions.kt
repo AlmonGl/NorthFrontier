@@ -4,13 +4,11 @@ package com.example.korlearn2.database
 import android.content.Context
 
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.lifecycleScope
 import androidx.room.Transaction
 import com.example.korlearn2.R
 
 import com.example.korlearn2.ViewModel.LocationViewModel
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 
 @Transaction
 fun generateAll(
@@ -24,15 +22,15 @@ fun generateAll(
     val arrayOfLeaderNames = context.resources.getStringArray(R.array.leader_names).toMutableList()
     arrayOfLeaderNames.shuffle()
     arrayOfLocationNames.shuffle()
-    val locations = Array(25) { i -> Location(i + 1, arrayOfLocationNames[i], "null") }
-    val localRulers = Array(40) { i -> LocalRuler(i + 1, arrayOfLeaderNames[i]) }
+    val locations = Array(16) { i -> Location(i + 1, arrayOfLocationNames[i], "null") }
+    val localRulers = Array(20) { i -> LocalRuler(i + 1, arrayOfLeaderNames[i]) }
 
 
     val squads = listOf(
-        Squad(1,  "null", 30),
-        Squad(2,  "null", 20),
-        Squad(3,  "null", 24),
-        Squad(4,  "null", 15)
+        Squad(1,   30),
+        Squad(2,   20),
+        Squad(3,   24),
+        Squad(4,   15)
     )
 
 
@@ -54,12 +52,7 @@ fun generateAll(
             dao.updateLocation(it)
             freeLeaders.remove(l)
         }
-        dao.getSquadsWithoutRuler().forEach {
-            val l = freeLeaders.random()
-            it.rulerName = l.rulerName
-            dao.updateSquad(it)
-            freeLeaders.remove(l)
-        }
+
         dao.insertYourStats(YourStats())
         dao.insertEnemyStats(EnemyStats())
 
@@ -77,21 +70,29 @@ fun nextMonth(
     viewModel.locationWithCivDec = "Rumors of civilian infrastructure degrade in:"
     viewModel.locationWithMilDec = "Rumors of military infrastructure degrade in:"
     lifecycleScope.launch {
-        ////raids
+        ////PLANNING RAIDS
         val enemyStats = dao.getEnemyStats()[0]
         enemyStats.raidedLast=""
         val raidSize =
             (enemyStats.enemyAvangardPower / 100..enemyStats.enemyAvangardPower / 50).random()
         var numberOfLocations = (3..5).random()
+        val firstRowLocs = mutableListOf<Int>(1,2,3,4)
+        val secondRowLocs = mutableListOf<Int>(5,6,7,8)
+        /*var i = 1
+        dao.getNotDepletedLocations().forEach {
+            when (i) {
+                in 1..4 -> firstRowLocs.add(it)
+                in 5..8 -> secondRowLocs.add(it)
+            }
+            i++
+        }*/
         while (numberOfLocations > 1) {
             val seed = (1..100).random()
             var locationID = 0
+
             when (seed) {
-                in (1..50) -> locationID = (1..5).random()
-                in (51..75) -> locationID = (6..10).random()
-                in (76..90) -> locationID = (11..15).random()
-                in (91..98) -> locationID = (16..20).random()
-                in (99..100) -> locationID = (21..25).random()
+                in (1..90) -> locationID = firstRowLocs.random()
+                in (91..100) -> locationID = secondRowLocs.random()
             }
             val location = dao.getLocationById(locationID)
             //enemyStats.enemyAvangardPower -= raidSize //TEMPORARY
@@ -102,7 +103,7 @@ fun nextMonth(
         }
         viewModel.locAttacked =enemyStats.raidedLast
         dao.updateEnemyStats(enemyStats)
-        ////raids
+        ////
         val stats = dao.getYourStats()[0]
         ///CALENDAR
         stats.monthNumber += 1
@@ -130,7 +131,7 @@ fun nextMonth(
             //
             ///MILITARY
             it.militaryFunds += it.plannedMilitaryFunds * (100 - ruler.fundsDecrease) / 100
-            it.plannedMilitaryFunds = 0
+
             if (stats.monthNumber == 1) {
                 if (it.militaryLvl * 12 <= it.militaryFunds) {
                     it.militaryFunds -= it.militaryLvl * 12
@@ -158,7 +159,7 @@ fun nextMonth(
             ///CIVILIAN
             it.civilFunds += it.plannedCivilFunds * (100 - ruler.fundsDecrease) / 100
             it.civilFunds = it.civilFunds * (5 + ruler.civilCompetence) / 10
-            it.plannedCivilFunds = 0
+
             if (it.workersExeptNatural <= it.civilFunds) {
                 it.civilFunds -= it.workersExeptNatural
                 it.locationCoffer += it.civilFunds * (100 - ruler.decreaseCofferIncoming) / 100
@@ -176,22 +177,34 @@ fun nextMonth(
             if (it.incomingBarbarians != 0) {
                 var militaryPower = it.militia + it.feudalPower
                 dao.getSquadsInLocation(it.id).forEach {
-                    militaryPower += it.number
+                    militaryPower += it.strength
+                    it.inAction=true
                 }
+                militaryPower*=(1+it.militaryLvl/35)
+                var razed = 0
                 if (militaryPower == 0) {
-                    it.barbarianRaids += 25
+                    razed = (10..25).random()
+                    it.barbarianRaids += razed
+                    val deaths = (5..50).random()
+                    it.decreasePop(deaths)
+                    viewModel.raidsReport+="\n ${it.locationName}(${it.id}) suffered $deaths pop loss due to undefended raid and $razed% was razed."
+                    /////TODO
                 } else {
                     if ((it.incomingBarbarians / militaryPower > 1) and (it.incomingBarbarians / militaryPower < 1.5)) {
                         it.barbarianRaids += 10
                     } else if ((it.incomingBarbarians / militaryPower >= 1.5) and (it.incomingBarbarians / militaryPower < 2)) {
                         it.barbarianRaids += 15
-                    } else if (it.incomingBarbarians / militaryPower >= 2) it.barbarianRaids += 20
+                    } else if (it.incomingBarbarians / militaryPower >= 3) {
+                        razed = (10..20).random()
+                        it.barbarianRaids += razed
+                    }
                 }
 
                 it.incomingBarbarians = 0
                 if (it.barbarianRaids > 100) it.barbarianRaids = 100
                 if (it.barbarianRaids < 0) it.barbarianRaids = 0
             }
+
             ///TAXES
 
             if (stats.monthNumber == 1) {
@@ -284,13 +297,13 @@ fun nextMonth(
                          in 0..7 -> {
                              it.locationCoffer-=it.workersExeptNatural*3
                              it.civilLvl+=1
-                             viewModel.rulersActionsLastMonth+="\n In ${it.id}, ${it.locationName} civilian infrastructure has been increased by 1 level"
+                             viewModel.rulersActionsCivUp+=" ${it.id},"
                          }
                          in 8..10-> {
                              if (it.locationCoffer>=it.militaryLvl*24) {
                                  it.locationCoffer-=it.militaryLvl*24
                                  it.militaryLvl+=1
-                                 viewModel.rulersActionsLastMonth+="\n In ${it.id}, ${it.locationName} military infrastructure has been increased by 1 level"
+                                 viewModel.rulersActionsMilUp+=" ${it.id},"
                              }
                          }
 
@@ -301,6 +314,15 @@ fun nextMonth(
             ///EVENTS
             dao.updateLocation(it)
 
+        }
+        ////TRAINING SQUADS
+        dao.getSquad().forEach {
+            if (!it.inAction) {
+                it.experience+=1
+            } else {
+                it.inAction=false
+            }
+            dao.updateSquad(it)
         }
         if (stats.monthNumber == 1) stats.gold += stats.taxesLastYear
         stats.loan += if (stats.loan >= 100) stats.loan / 100 else if (stats.loan in 1..99) 1 else 0

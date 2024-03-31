@@ -34,18 +34,22 @@ fun MonthScreen(navController: NavController,
         Button(onClick = { navController.navigate(Screen.Locations.route) }) {
             Text(text = "Let me see province map")
         }
-        if (viewModel.rulersActionsLastMonth!="") {
-            Text(text = "Local rulers sent the following reports this month:")
-            Text(text = viewModel.rulersActionsLastMonth)
 
-        }
+            Text(text = "Local rulers sent the following reports this month:")
+            Text(text = viewModel.rulersActionsCivUp +"\n"+ viewModel.rulersActionsMilUp)
+
+
         Text(text = viewModel.locationWithCivDec)
         Text(text = viewModel.locationWithMilDec)
+        Text(text = "\n"+viewModel.raidsReport)
         if (viewModel.numberOfRequests == 0) {
             
             Button(onClick = {
-                viewModel.rulersActionsMonthBeforeLast = viewModel.rulersActionsLastMonth
-                viewModel.rulersActionsLastMonth=""
+                viewModel.rulersActionsMonthBeforeLast = viewModel.rulersActionsCivUp +"\n"+ viewModel.rulersActionsMilUp
+                viewModel.rulersActionsMilUp="Mil. level increased in: "
+                viewModel.rulersActionsCivUp="Civ. level increased in: "
+                viewModel.raidsReportBefore = viewModel.raidsReport
+                viewModel.raidsReport = "Rumors about barbarian raids:"
                 navController.navigate(Screen.MainInfo.route)
 
             }) {
