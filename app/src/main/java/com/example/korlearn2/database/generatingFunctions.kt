@@ -27,10 +27,10 @@ fun generateAll(
 
 
     val squads = listOf(
-        Squad(1,   30),
-        Squad(2,   20),
-        Squad(3,   24),
-        Squad(4,   15)
+        Squad(1,   30, "1st Squad"),
+        Squad(2,   20,"2nd Squad"),
+        Squad(3,   24,"3th Squad"),
+        Squad(4,   15,"4th Squad")
     )
 
 
@@ -40,10 +40,13 @@ fun generateAll(
             dao.insertLocation(it)
         }
         localRulers.forEach { dao.insertLocalRuler(it) }
-        squads.forEach { dao.insertSquad(it) }
+        squads.forEach {
+            it.assingNewLeader()
+            dao.insertSquad(it)
+        }
 
         val freeLeaders =
-            dao.getFreeLocalRulers(dao.getRulersOnSquads() + dao.getRulersOnLocations())
+            dao.getFreeLocalRulers(dao.getRulersOnLocations())
                 .toMutableList()
         dao.getLocationsWithoutRuler().forEach {
 
@@ -176,30 +179,52 @@ fun nextMonth(
             it.barbariansLastMonth = it.incomingBarbarians
             if (it.incomingBarbarians != 0) {
                 var militaryPower = it.militia + it.feudalPower
+                var militaryNumber = militaryPower
+                var overwhelmed = false
                 dao.getSquadsInLocation(it.id).forEach {
                     militaryPower += it.strength
+                    militaryNumber += it.number
                     it.inAction=true
                 }
                 militaryPower*=(1+it.militaryLvl/35)
                 var razed = 0
+                var deaths =0
+                var combatantLossesPercent = 0
                 if (militaryPower == 0) {
-                    razed = (10..25).random()
-                    it.barbarianRaids += razed
-                    val deaths = (5..50).random()
-                    it.decreasePop(deaths)
-                    viewModel.raidsReport+="\n ${it.locationName}(${it.id}) suffered $deaths pop loss due to undefended raid and $razed% was razed."
-                    /////TODO
+                    razed = (21..25).random()
+                    deaths = (5..70).random()
+
                 } else {
                     if ((it.incomingBarbarians / militaryPower > 1) and (it.incomingBarbarians / militaryPower < 1.5)) {
-                        it.barbarianRaids += 10
+                        razed = (1..9).random()
+                        deaths = (1..5).random()
+                        combatantLossesPercent = (5..20).random()
                     } else if ((it.incomingBarbarians / militaryPower >= 1.5) and (it.incomingBarbarians / militaryPower < 2)) {
-                        it.barbarianRaids += 15
+                        razed = (10..14).random()
+                        deaths = (5..10).random()
+                        combatantLossesPercent = (10..30).random()
                     } else if (it.incomingBarbarians / militaryPower >= 3) {
-                        razed = (10..20).random()
-                        it.barbarianRaids += razed
+                        razed = (15..20).random()
+                        deaths = (5..20).random()
+                        overwhelmed = true
+                        combatantLossesPercent = (31..100).random()
+                    } else {
+                        combatantLossesPercent = (1..10).random()
+                    }
+
+
+                }
+                if (combatantLossesPercent>0) {
+                    dao.getSquadsInLocation(it.id).forEach {
+                        if ((!overwhelmed)||(!it.carefull)) {
+                            it.applyCasualities(it.number*combatantLossesPercent/100)
+                            dao.updateSquad(it)
+                        }
                     }
                 }
-
+                viewModel.raidsReport+="\n ${it.locationName}(${it.id}) suffered $deaths pop loss and $razed% of economy was razed.\n Squads losses was $combatantLossesPercent%"
+                it.barbarianRaids += razed
+                it.decreasePop(deaths)
                 it.incomingBarbarians = 0
                 if (it.barbarianRaids > 100) it.barbarianRaids = 100
                 if (it.barbarianRaids < 0) it.barbarianRaids = 0
@@ -317,11 +342,7 @@ fun nextMonth(
         }
         ////TRAINING SQUADS
         dao.getSquad().forEach {
-            if (!it.inAction) {
-                it.experience+=1
-            } else {
-                it.inAction=false
-            }
+            it.training()
             dao.updateSquad(it)
         }
         if (stats.monthNumber == 1) stats.gold += stats.taxesLastYear

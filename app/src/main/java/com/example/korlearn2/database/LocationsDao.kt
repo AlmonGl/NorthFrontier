@@ -43,12 +43,10 @@ interface LocationsDao {
     /////SQUADS/////////
     @Query ("SELECT * FROM Squad")
     suspend fun getSquad(): List<Squad>
-    @Query ("SELECT rulerName FROM Squad WHERE rulerName != 'null'")
-    suspend fun getRulersOnSquads(): List<String>
+
     @Query ("SELECT * FROM Squad WHERE id = :id")
     suspend fun getSquadById(id: Int): Squad
-    @Query ("SELECT * FROM Squad WHERE rulerName = 'null'")
-    suspend fun getSquadsWithoutRuler(): List<Squad>
+
     @Query ("SELECT * FROM Squad WHERE locationId = :locationId")
     suspend fun getSquadsInLocation(locationId: Int): List<Squad>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
