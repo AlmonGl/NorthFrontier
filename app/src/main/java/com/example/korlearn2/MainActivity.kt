@@ -143,6 +143,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
                 viewModel.text1+="\n\n${viewModel.locationWithCivDec}"
                 viewModel.text1+="\n${viewModel.locationWithMilDec}"
                 viewModel.text1+="\n${viewModel.raidsReportBefore}"
+                viewModel.text1+="\nTotal squads costs: ${viewModel.squadsSalary}"
 
             }
         }

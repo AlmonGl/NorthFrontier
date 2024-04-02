@@ -160,6 +160,17 @@ fun MainInfoScreen(
             ) {
                 Text(text = "next month")
             }
+            Button(
+                onClick =
+                {
+                    viewModel.squadName = ""
+                    navController.navigate(Screen.SquadManager.route)
+
+
+                }
+            ) {
+                Text(text = "squads")
+            }
         }
         Box(modifier = Modifier.verticalScroll(ScrollState(0))) {
             Text(

@@ -17,6 +17,9 @@ fun generateAll(
     viewModel: LocationViewModel,
     context: Context
 ) {
+    lifecycleScope.launch {
+        dao.deleteSquads()
+    }
     val arrayOfLocationNames =
         context.resources.getStringArray(R.array.location_names).toMutableList()
     val arrayOfLeaderNames = context.resources.getStringArray(R.array.leader_names).toMutableList()
@@ -185,6 +188,7 @@ fun nextMonth(
                     militaryPower += it.strength
                     militaryNumber += it.number
                     it.inAction=true
+                    dao.updateSquad(it)
                 }
                 militaryPower*=(1+it.militaryLvl/35)
                 var razed = 0
@@ -340,9 +344,13 @@ fun nextMonth(
             dao.updateLocation(it)
 
         }
-        ////TRAINING SQUADS
+        ////TRAINING AN PAYING SQUADS
+        viewModel.squadsSalary=0
         dao.getSquad().forEach {
+            //TODO // paid total
             it.training()
+            viewModel.squadsSalary+=it.salary
+            stats.gold-=it.salary
             dao.updateSquad(it)
         }
         if (stats.monthNumber == 1) stats.gold += stats.taxesLastYear

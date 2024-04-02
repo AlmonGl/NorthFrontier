@@ -67,6 +67,13 @@ fun SetupNavGraph(
         {
             UpkeepScreen(navController,lifecycleScope,viewModel,dao,context)
         }
+        composable(
+            route = Screen.SquadManager.route
+        )
+        {
+            SquadManagingScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
     }
 
 }
+

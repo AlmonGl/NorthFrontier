@@ -1,6 +1,7 @@
 package com.example.korlearn2.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -43,10 +44,12 @@ interface LocationsDao {
     /////SQUADS/////////
     @Query ("SELECT * FROM Squad")
     suspend fun getSquad(): List<Squad>
-
+    @Query ("SELECT id FROM Squad")
+    suspend fun getSquadsId(): List<Int>
     @Query ("SELECT * FROM Squad WHERE id = :id")
     suspend fun getSquadById(id: Int): Squad
-
+    @Query ("DELETE FROM Squad")
+    suspend fun deleteSquads()
     @Query ("SELECT * FROM Squad WHERE locationId = :locationId")
     suspend fun getSquadsInLocation(locationId: Int): List<Squad>
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -45,10 +45,8 @@ class LocationViewModel(): ViewModel() {
     var raidsReportBefore = ""
     var numberOfRequests = 0
     var squadIdList: List<Int> = listOf()
-    fun updateCiv(array: Array<Int>){
-        locationsCivUpkeep = array
-    }
-    fun updateMil(array: Array<Int>){
-        locationsMilUpkeep = array
-    }
+    var squadsSalary = 0
+    var squadName: String by mutableStateOf("")
+    var squadNextId = -1
+
 }
