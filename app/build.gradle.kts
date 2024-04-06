@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.korlearn2"
+    namespace = "com.game.northFrontier"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.korlearn2"
+        applicationId = "com.game.northFrontier"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
