@@ -36,7 +36,7 @@ data class Location (
     var barbarianRaidsYearBefore: Int = 0 //0-100 //fog 1
     var crimeInfluence: Int = (1..25).random() //0-100 //fog 4
     var churchInfluence: Int = (40..80).random() //0-100 //fog 4
-    var fogOfWar: Int = 1//0-5, 6 - unreachable
+    var fogOfWar: Int = 5//0-5, 6 - unreachable
     var plannedCivilFunds = 0 //fog 0
     var plannedMilitaryFunds = 0 //fog 0
     var taxesLastYear = 0 //fog 0
@@ -74,8 +74,7 @@ data class Location (
         if (manor) s += "\n Manor with $feudalPower solders"
         s += "\n\n Taxes last year $taxesLastYear gold"
         s += "\n Taxes before last year $taxesBeforeLastYear gold"
-        s += "\n\n Planned civilian funding: $plannedCivilFunds gold."
-        s += "\n Planned military funding: $plannedMilitaryFunds gold."
+
         ///FOG==1
         if (fogOfWar >= 1) {
             s += "\n\n Barbarians razed $barbarianRaids % this year."
@@ -224,6 +223,8 @@ data class Location (
         manor=false
         militia=0
         feudalPower=0
+        plannedCivilFunds=0
+        plannedMilitaryFunds=0
     }
     fun decreasePop(x1: Int) {
         var x =x1

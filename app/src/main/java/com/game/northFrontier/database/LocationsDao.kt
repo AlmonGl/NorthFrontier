@@ -38,6 +38,8 @@ interface LocationsDao {
     suspend fun getLocalRulerByName(rulerName: String): LocalRuler
     @Query ("SELECT * FROM LocalRuler WHERE rulerName NOT IN (:occupied)")
     suspend fun getFreeLocalRulers(occupied: List<String>): List<LocalRuler>
+    @Query ("SELECT id FROM LocalRuler WHERE rulerName NOT IN (:occupied)")
+    suspend fun getFreeLocalRulersId(occupied: List<String>): List<Int>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocalRuler(localRuler: LocalRuler)
     @Update
@@ -47,6 +49,8 @@ interface LocationsDao {
     suspend fun getSquad(): List<Squad>
     @Query ("SELECT id FROM Squad")
     suspend fun getSquadsId(): List<Int>
+    @Query ("SELECT locationId FROM Squad")
+    suspend fun getSquadsLocations(): List<Int>
     @Query ("SELECT * FROM Squad WHERE id = :id")
     suspend fun getSquadById(id: Int): Squad
     @Query ("DELETE FROM Squad")

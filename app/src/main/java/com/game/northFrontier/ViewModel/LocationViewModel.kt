@@ -23,7 +23,10 @@ class LocationViewModel(): ViewModel() {
     var selectedLocationId: Int by mutableIntStateOf(1)
     var selectedSquad: Int by mutableIntStateOf(1)
     var selectedSquadInfo: String by mutableStateOf("")
-
+    var selectedRuler: Int by mutableIntStateOf(-1)
+    var selectedRulerInfo: String by mutableStateOf("")
+    var selectedRulerName: String by mutableStateOf("")
+    var rulersFreeIdList: List<Int> = listOf()
     fun changeBGcolor(){
         backgroundColor = Color.Red
 
@@ -48,5 +51,8 @@ class LocationViewModel(): ViewModel() {
     var squadName: String by mutableStateOf("")
     var squadNextId = -1
     var thisTurnReports = "Other reports:\n"
+    var endReason = ""
+    var gameEnded = false
+
 
 }

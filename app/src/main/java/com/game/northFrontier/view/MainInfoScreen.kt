@@ -141,14 +141,11 @@ fun MainInfoScreen(
             Button(
                 onClick =
                 {
-                    nextMonth(lifecycleScope, dao, viewModel)
-                    lifecycleScope.launch { delay(1000) }
-                    navController.navigate(Screen.Month.route)
-
-
+                    refreshRulerManager(lifecycleScope,viewModel,dao)
+                    navController.navigate(Screen.RulersManaging.route)
                 }
             ) {
-                Text(text = "next month")
+                Text(text = "rulers")
             }
             Button(
                 onClick =
@@ -159,6 +156,20 @@ fun MainInfoScreen(
                 }
             ) {
                 Text(text = "squads")
+            }
+        }
+        Row {
+            Button(
+                onClick =
+                {
+                    nextMonth(lifecycleScope, dao, viewModel, navController)
+                    lifecycleScope.launch { delay(1000) }
+                    navController.navigate(Screen.Month.route)
+
+
+                }
+            ) {
+                Text(text = "next month")
             }
         }
         Box(modifier = Modifier.verticalScroll(ScrollState(0))) {
@@ -289,7 +300,7 @@ fun LocationCard(
                     dao
                         .getSquadsInLocation(id)
                         .forEach {
-                            viewModel.text1 += "\n${it.showAllData()}"
+                            viewModel.text1 += "\n\n${it.showAllData()}"
                         }
                     viewModel.selectedLocationId = id
                 }
@@ -320,6 +331,7 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
         {
 
             lifecycleScope.launch {
+                val squadDislocation = dao.getSquadsLocations()
 
                 dao.getLocation().forEach {
                     viewModel.locationsCivUpkeep[it.id]=it.plannedCivilFunds
@@ -327,7 +339,8 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
                 }
                 viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()} "
                 viewModel.text1+="\n\nTotal squads cost: ${viewModel.squadsSalary}"
-                viewModel.text1+="\n Civ upkeep last month: ${viewModel.locationsCivUpkeep.sum()}"
+                viewModel.text1+="\nSquads in: ${squadDislocation.sorted()}"
+                viewModel.text1+="\n\n Civ upkeep last month: ${viewModel.locationsCivUpkeep.sum()}"
                 viewModel.text1+="\n Mil upkeep last month: ${viewModel.locationsMilUpkeep.sum()}"
                 //viewModel.text1 += "\n Enemy stats: ${dao.getEnemyStats()[0].showAllData()}"
                 viewModel.text1+="\n\nReport last month: \n ${viewModel.rulersActionsMonthBeforeLast}"
@@ -397,6 +410,8 @@ fun BackGround(id: Int){
             2-> painterResource(id = R.drawable.im2)
             3-> painterResource(id = R.drawable.im3)
             4-> painterResource(id = R.drawable.im4)
+            5-> painterResource(id = R.drawable.im5)
+            6-> painterResource(id = R.drawable.im6)
             else -> painterResource(id = R.drawable.im5)
         }
         Image(

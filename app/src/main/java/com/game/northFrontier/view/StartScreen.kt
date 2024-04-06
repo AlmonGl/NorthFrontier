@@ -40,7 +40,10 @@ fun StartScreen(
             text = "Continue",
             fontSize = MaterialTheme.typography.headlineLarge.fontSize,
             modifier = Modifier.clickable {
-                navController.navigate(Screen.MainInfo.route)
+                if (!viewModel.gameEnded) {
+                    navController.navigate(Screen.MainInfo.route)
+                }
+
             }
 
         )
@@ -51,6 +54,8 @@ fun StartScreen(
                     generateAll(lifecycleScope, dao, viewModel, context)
                     viewModel.text1 = ""
                     viewModel.selectedLocationId=-1
+                    viewModel.gameEnded=false
+                    viewModel.endReason=""
                     navController.navigate(Screen.MainInfo.route)
                 }
 

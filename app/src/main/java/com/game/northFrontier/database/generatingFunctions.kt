@@ -4,10 +4,13 @@ package com.game.northFrontier.database
 import android.content.Context
 
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.navigation.NavController
 import androidx.room.Transaction
 import com.game.northFrontier.R
 
 import com.game.northFrontier.ViewModel.LocationViewModel
+import com.game.northFrontier.view.Screen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Transaction
@@ -17,6 +20,7 @@ fun generateAll(
     viewModel: LocationViewModel,
     context: Context
 ) {
+
     lifecycleScope.launch {
         dao.deleteSquads()
     }
@@ -70,24 +74,32 @@ fun generateAll(
 fun nextMonth(
     lifecycleScope: LifecycleCoroutineScope,
     dao: LocationsDao,
-    viewModel: LocationViewModel
+    viewModel: LocationViewModel,
+    navController: NavController
 ) {
 
     viewModel.locationWithCivDec = "Rumors of civilian infrastructure degrade in:"
     viewModel.locationWithMilDec = "Rumors of military infrastructure degrade in:"
-    viewModel.thisTurnReports = "Other reports:\n"
+    viewModel.thisTurnReports = "Other reports:"
     lifecycleScope.launch {
         ////PLANNING RAIDS
         val enemyStats = dao.getEnemyStats()[0]
         enemyStats.raidedLast=""
-        val raidSize =
-            (enemyStats.enemyAvangardPower / 100..enemyStats.enemyAvangardPower / 50).random()
-        var numberOfLocations = (3..5).random()
+        val r = enemyStats.enemyAvangardPower / (90..110).random()
+        val raidSize = arrayListOf(r,r,r,r,r,r,r,2*r,2*r,2*r,2*r,2*r,3*r,3*r,4*r,5*r).random()
+        var numberOfLocations = arrayListOf(1,1,2,2,2,2,2,2,2,3,3,3,4,4,5).random()
         val locIds = dao.getNotDepletedLocationsIds()
         locIds.sorted()
+        if (locIds.size<8) {
+            viewModel.endReason = "You lose half of your province, to barbarians. News about it reached emperor and you have been fired."
+            viewModel.gameEnded=true
+            delay(1000)
+            navController.navigate(Screen.End.route)
+
+        }
         val firstRowLocs = mutableListOf<Int>(locIds[0],locIds[1],locIds[2],locIds[3])
-        val secondRowLocs = mutableListOf<Int>(locIds[5],locIds[6],locIds[7],locIds[8])
-        while (numberOfLocations > 1) {
+        val secondRowLocs = mutableListOf<Int>(locIds[4],locIds[5],locIds[6],locIds[7])
+        while (numberOfLocations >= 1) {
             val seed = (1..100).random()
             var locationID = 0
 
@@ -180,7 +192,7 @@ fun nextMonth(
                 var militaryPower = it.militia + it.feudalPower
                 var militaryNumber = militaryPower
                 var overwhelmed = false
-                var tactics = 1
+                var tactics = 1f
                 dao.getSquadsInLocation(it.id).forEach {
                     militaryPower += it.strength
                     militaryNumber += it.number
@@ -188,7 +200,7 @@ fun nextMonth(
                     dao.updateSquad(it)
                     if (it.tactics>tactics) tactics=it.tactics
                 }
-                militaryPower*=(1+(it.militaryLvl*tactics)/35)
+                militaryPower=(militaryPower.toFloat()*(1f+ (it.militaryLvl*tactics) /35f)).toInt()
                 var razed = 0
                 var deaths =0
                 var combatantLossesPercent = 0
@@ -200,26 +212,26 @@ fun nextMonth(
                     when (it.incomingBarbarians.toFloat() / militaryPower.toFloat()){
                         in (0f..1f) -> {
                             combatantLossesPercent = (1..10).random()
-                            viewModel.thisTurnReports+="Battle against ${it.incomingBarbarians} men was won at ${it.locationName}(${it.id}) with $militaryPower our power!"
+                            viewModel.thisTurnReports+="\nBattle against ${it.incomingBarbarians} men was won at ${it.locationName}(${it.id}) with $militaryPower our power!"
                         }
                         in (1.01f..1.5f) -> {
                             razed = (1..9).random()
                             deaths = (1..10).random()
                             combatantLossesPercent = (5..20).random()
-                            viewModel.thisTurnReports+="Battle against ${it.incomingBarbarians} men was lost(1 to 1.5) at ${it.locationName}(${it.id}) with $militaryPower our power."
+                            viewModel.thisTurnReports+="\nBattle against ${it.incomingBarbarians} men was lost(1 to 1.5) at ${it.locationName}(${it.id}) with $militaryPower our power."
                         }
                         in (1.51f..3f) -> {
                             razed = (10..14).random()
                             deaths = (11..30).random()
                             combatantLossesPercent = (10..30).random()
-                            viewModel.thisTurnReports+="Battle against ${it.incomingBarbarians} men was lost(1.5 to 3) at ${it.locationName}(${it.id}) with $militaryPower our power."
+                            viewModel.thisTurnReports+="\nBattle against ${it.incomingBarbarians} men was lost(1.5 to 3) at ${it.locationName}(${it.id}) with $militaryPower our power."
                         }
                         else -> { ///>3f
                             razed = (25..30).random()
                             deaths = (30..100).random()
                             overwhelmed = true
                             combatantLossesPercent = (31..99).random()
-                            viewModel.thisTurnReports+="Battle against ${it.incomingBarbarians} men was lost(>3) at ${it.locationName}(${it.id}) with $militaryPower our power."
+                            viewModel.thisTurnReports+="\nBattle against ${it.incomingBarbarians} men was lost(>3) at ${it.locationName}(${it.id}) with $militaryPower our power."
                         }
                     }
                 }
@@ -350,6 +362,12 @@ fun nextMonth(
         if (stats.gold<0) {
             stats.loan-=stats.gold
             stats.gold=0
+        }
+        if (stats.loan>50000) {
+            viewModel.endReason = "Your debt exceed 50000 gold. It's time to pay."
+            viewModel.gameEnded=true
+            delay(1000)
+            navController.navigate(Screen.End.route)
         }
         dao.updateYourStats(stats)
     }

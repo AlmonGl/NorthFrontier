@@ -72,8 +72,19 @@ fun SetupNavGraph(
         )
         {
 
-
             SquadManagingScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
+        composable(
+            route = Screen.End.route
+        )
+        {
+            EndScreen(navController = navController, viewModel = viewModel)
+        }
+        composable(
+            route = Screen.RulersManaging.route
+        )
+        {
+            RulersManagingScreen(navController,lifecycleScope,viewModel,dao,context)
         }
     }
 
