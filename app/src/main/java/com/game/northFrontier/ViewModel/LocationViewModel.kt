@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import android.net.Uri
+import androidx.compose.runtime.remember
+import com.game.northFrontier.database.Location
 
 
 class LocationViewModel(): ViewModel() {
@@ -31,18 +33,13 @@ class LocationViewModel(): ViewModel() {
         backgroundColor = Color.Red
 
     }
-    var currentDate = ""
+    var currentMonth = 0
+    var currentYear = 0
     var locAttacked = ""
-    var rulersActionsCivUp = "Civ. level increased in: "
-    var rulersActionsMilUp = "Mil. level increased in: "
-    var rulersActionsMonthBeforeLast = ""
-    var locationWithCivDec = ""
-    var locationWithMilDec = ""
-    var locationsCivUpkeep = arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
-    var locationsMilUpkeep= arrayOf(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-    var civUpkeepChange: Int by mutableIntStateOf(0)
-    var milUpkeepChange: Int by mutableIntStateOf(0)
+
+
+
     var raidsReport = "Rumors about barbarian raids:"
     var raidsReportBefore = ""
     var numberOfRequests = 0
@@ -53,6 +50,21 @@ class LocationViewModel(): ViewModel() {
     var thisTurnReports = "Other reports:\n"
     var endReason = ""
     var gameEnded = false
+
+    var currentTaxesLocId = 1
+    var currentLocationTotalTaxes = 0
+    var listOfLocsToTax = mutableListOf<Int>()
+    var foodUpkeep by  mutableIntStateOf(0)
+    var foodUpkeepValue = 0
+    var milUpkeep by  mutableIntStateOf(0)
+    var milUpkeepValue = 0
+    var civUpkeep by  mutableIntStateOf(0)
+    var civUpkeepValue = 0
+    var civUp by  mutableStateOf(false)
+    var civUpValue= 0
+    var milUp by  mutableStateOf(false)
+    var milUpValue = 0
+
 
 
 }

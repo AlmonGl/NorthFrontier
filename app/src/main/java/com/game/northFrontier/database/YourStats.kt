@@ -17,12 +17,16 @@ data class YourStats (
     var loan: Int = 0
     var taxesBeforeLastYear: Int = 0
     var taxesLastYear: Int = 0
+    var upkeepBeforeLastYear: Int = 0
+    var upkeepLastYear: Int = 0
     var loanPercent: Int = 0
     var spyOnLocation: Int = -1
     fun showAllData(): String{
         return  "Year/Month: ${yearNumber}/${monthNumber} \n" +
                 "Gold: $gold, Age: $age, Loan: $loan\n Taxes last year = $taxesLastYear \n" +
                 " Taxes before last year = $taxesBeforeLastYear" +
+                "\nUpkeep last year = $upkeepLastYear" +
+                "\nUpkeep before last year = $upkeepBeforeLastYear" +
                 "\n Percent last month =  $loanPercent" +
                 "\nSpy on location # $spyOnLocation"
     }

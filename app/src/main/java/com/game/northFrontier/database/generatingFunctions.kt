@@ -78,8 +78,7 @@ fun nextMonth(
     navController: NavController
 ) {
 
-    viewModel.locationWithCivDec = "Rumors of civilian infrastructure degrade in:"
-    viewModel.locationWithMilDec = "Rumors of military infrastructure degrade in:"
+
     viewModel.thisTurnReports = "Other reports:"
     lifecycleScope.launch {
         ////PLANNING RAIDS
@@ -126,7 +125,9 @@ fun nextMonth(
             stats.taxesBeforeLastYear = stats.taxesLastYear
             stats.taxesLastYear = 0
         }
-        viewModel.currentDate = "Year ${stats.yearNumber}, Month ${stats.monthNumber}."
+        viewModel.currentMonth = stats.monthNumber
+        viewModel.currentYear = stats.yearNumber
+
         ////SPYING
         if (stats.spyOnLocation!=-1){
             val locSpying = dao.getLocationById(stats.spyOnLocation)
@@ -135,57 +136,12 @@ fun nextMonth(
             dao.updateLocation(locSpying)
         }
         ////FOR EACH LOCATION
+
         dao.getNotDepletedLocations().forEach { it ->
             val ruler = dao.getLocalRulerByName(it.rulerName)
-            //GET GOLD FROM YOUR STATS
-            if (it.plannedCivilFunds<0) it.plannedCivilFunds=0
-            if (it.plannedMilitaryFunds<0) it.plannedMilitaryFunds=0
-            stats.gold-=(it.plannedCivilFunds+it.plannedMilitaryFunds)
             //
-            ///MILITARY
-            it.militaryFunds += it.plannedMilitaryFunds * (100 - ruler.fundsDecrease) / 100
 
-            if (stats.monthNumber == 1) {
-                if (it.militaryLvl * 12 <= it.militaryFunds) {
-                    it.militaryFunds -= it.militaryLvl * 12
-                    it.locationCoffer += it.militaryFunds * (100 - ruler.decreaseCofferIncoming) / 100
-                } else if (ruler.militaryEnthusiasm) {
-                } else {
 
-                    var decreaseLvl = 6
-                    if (it.militaryFunds != 0) {
-                        decreaseLvl = when (it.militaryLvl * 12 / it.militaryFunds) {
-                            1 -> 1
-                            2 -> 2
-                            3 -> 3
-                            4 -> 4
-                            5 -> 5
-                            else -> 6
-                        }
-                    }
-                    it.militaryLvl -= decreaseLvl
-                    if (it.fogOfWar>=3) viewModel.locationWithMilDec+=" ${it.id}(-$decreaseLvl),"
-                    if (it.militaryLvl <= 0) it.militaryLvl = 1
-                }
-                it.militaryFunds = 0
-            }
-            ///CIVILIAN
-            it.civilFunds += it.plannedCivilFunds * (100 - ruler.fundsDecrease) / 100
-            it.civilFunds = it.civilFunds * (5 + ruler.civilCompetence) / 10
-
-            if (it.workersExeptNatural <= it.civilFunds) {
-                it.civilFunds -= it.workersExeptNatural
-                it.locationCoffer += it.civilFunds * (100 - ruler.decreaseCofferIncoming) / 100
-            } else if (ruler.addCivilShortageFromCoffer and (it.locationCoffer >= it.workersExeptNatural - it.civilFunds)) {
-                it.locationCoffer -= (it.workersExeptNatural - it.civilFunds)
-            } else if (it.workersExeptNatural > it.civilFunds) {
-                val decLvl = arrayListOf(1,1,2,2,3,3,3,4,4,5,5,5,6,6,6,7,8,9,10).random()
-                it.civilLvl -= decLvl
-                if (it.fogOfWar>=3) viewModel.locationWithCivDec+=" ${it.id}(-$decLvl),"
-                if (it.civilLvl<1) it.civilLvl=1
-            }
-
-            it.civilFunds = 0
             ///RESOLVE RAIDS
             it.barbariansLastMonth = it.incomingBarbarians
             if (it.incomingBarbarians != 0) {
@@ -250,6 +206,19 @@ fun nextMonth(
                 if (it.barbarianRaids > 100) it.barbarianRaids = 100
                 if (it.barbarianRaids < 0) it.barbarianRaids = 0
             }
+            ///UPKEEP
+            if (stats.monthNumber == 1) {
+                stats.upkeepBeforeLastYear = stats.upkeepLastYear
+                stats.upkeepLastYear=0
+                ///MILITARY
+                it.milUpkeep = (it.militaryLvl*12*ruler.milUpkeepEff)/100
+                ///FOOD
+                it.foodUpkeep = (it.workersAll * ruler.foodUpkeepEff)/100
+                ///CIVILIAN
+                it.civUpkeep = (it.civilLvl*12*ruler.civUpkeepEff)/100
+                it.civUpFunds = (it.civilLvl*(1..12).random()*ruler.civUpEfficiency)/100
+                it.milUpFunds = (it.militaryLvl*(1..12).random()*ruler.milUpEfficiency)/100
+            }
 
             ///TAXES
 
@@ -258,41 +227,24 @@ fun nextMonth(
                 it.taxesLastYear = 0
                 it.climateLastYear = arrayListOf(-5, -4, -3, -2, -2, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 4, 5
                 ).random()
-                var climateInfluence = it.climateLastYear
-                if ((climateInfluence < 0) and ruler.climateAdapting) climateInfluence = 0
+                val climateInfluence = it.climateLastYear
 
-                var naturalProduction =
-                    (it.civilLvl + 70) * it.workersNatural * it.fertility *
-                            (climateInfluence + 6) * (101 - it.barbarianRaids) / 60000 - it.workersAll / 3
-                if (naturalProduction < 0) {
-                    if (ruler.giveFromCofferIfStarvation) {
-                        if (it.locationCoffer + naturalProduction >= 0) {
-                            it.locationCoffer += naturalProduction
-                        } else {
-                            val deaths = (-(naturalProduction+it.locationCoffer)/3..-(naturalProduction+it.locationCoffer)).random()
-                            it.decreasePop(deaths)
-                            it.locationCoffer = 0
-                            viewModel.thisTurnReports+="\n In ${it.locationName}(${it.id}) $deaths died from starvation"
-                        }
-                    } else {
-                        val deaths = (-naturalProduction/3..-naturalProduction).random()
-                        it.decreasePop(deaths)
-                        viewModel.thisTurnReports+="\n In ${it.locationName}(${it.id}) $deaths died from starvation"
-                    }
-                    naturalProduction = 0
-                }
+                val naturalProduction =
+                    (((it.civilLvl + 70) * it.workersNatural * it.fertility *
+                            (climateInfluence + 6) * (101 - it.barbarianRaids) / 60000)*ruler.naturalTaxesEff)/100
+
                 val commoditiesProduction =
-                    (it.civilLvl + 100) * it.workersCommodities * (it.fertility + 1) *
-                            (climateInfluence + 6) * 3 * (101 - it.barbarianRaids) / 120000
-                val profProduction = it.workersProfs * it.civilLvl
-                val tradeProduction = it.workersTraders * it.civilLvl
+                    (((it.civilLvl + 100) * it.workersCommodities * (it.fertility + 1) *
+                            (climateInfluence + 6) * 3 * (101 - it.barbarianRaids) / 120000)*ruler.commodTaxesEff)/100
+                val profProduction = (it.workersProfs * it.civilLvl * (101 - it.barbarianRaids)*ruler.profTaxesEff)/10000
+                val tradeProduction = (it.workersTraders * it.civilLvl *(101 - it.barbarianRaids)* ruler.tradersTaxesEff)/10000
                 val extractionProduction =
-                    it.abundance * it.workersExtraction * 5 * (it.civilLvl + 25) * (101 - it.barbarianRaids) / 10000
+                    ((it.abundance * it.workersExtraction * 5 * (it.civilLvl + 25) * (101 - it.barbarianRaids) / 10000)*ruler.extractionTaxesEff)/100
                 it.taxesLastYear =
-                    ((naturalProduction + commoditiesProduction + profProduction + tradeProduction +
-                            extractionProduction) * (101 - it.crimeInfluence) * (101 - it.barbarianRaids)) / 10000
-                it.taxesLastYear = it.taxesLastYear - (it.taxesLastYear*ruler.embezzlement)/10
-                if (it.taxesLastYear > 0) stats.taxesLastYear += it.taxesLastYear
+                    naturalProduction + commoditiesProduction + profProduction + tradeProduction +
+                            extractionProduction
+
+
 
                 it.barbarianRaidsYearBefore = it.barbarianRaids
                 it.barbarianRaids = 0
@@ -302,42 +254,20 @@ fun nextMonth(
                 it.naturalTaxesLastYear = naturalProduction
                 it.extractionTaxesLastYear = extractionProduction
 
-                ///leader traits
-                if (ruler.profAttraction) it.workersProfs+=1
-                if (ruler.tradersAttraction) it.workersTraders+=1
-                if (ruler.agriAttraction) it.workersNatural+=10
-                if (ruler.extractionAttraction) it.workersExtraction+=5
-                if (ruler.commodityAttraction) it.workersCommodities+=5
-                it.crimeInfluence-=ruler.lawsAttitude
-                if (it.crimeInfluence<0) it.crimeInfluence=0
-                if (it.crimeInfluence>100) it.crimeInfluence=100
-
-
-            }
-            //starvation to do
-            ///AUTO INCREASE
-            if (it.locationCoffer>=it.workersExeptNatural*5){
-                if((1..10).random()>=ruler.initiative)
+                ///POPULATION GROWTH
+                if (it.barbarianRaidsYearBefore< 1)
                 {
-                     when ((0..10).random()) {
-                         in 0..7 -> {
-                             it.locationCoffer-=it.workersExeptNatural*3
-                             it.civilLvl+=1
-                             viewModel.rulersActionsCivUp+=" ${it.id},"
-                         }
-                         in 8..10-> {
-                             if (it.locationCoffer>=it.militaryLvl*24) {
-                                 it.locationCoffer-=it.militaryLvl*24
-                                 it.militaryLvl+=1
-                                 viewModel.rulersActionsMilUp+=" ${it.id},"
-                             }
-                         }
+                    when ((1..5).random()) {
+                        1-> it.workersProfs+=1
+                        2-> it.workersTraders+=1
+                        3-> it.workersNatural+=10
+                        4-> it.workersExtraction+=5
+                        5-> it.workersCommodities+=5
 
-
-                     }
+                    }
                 }
             }
-            ///EVENTS
+
             dao.updateLocation(it)
 
         }
@@ -352,9 +282,9 @@ fun nextMonth(
         }
 
 
-        if (stats.monthNumber == 1) stats.gold += stats.taxesLastYear
-        stats.loan += if (stats.loan >= 100) stats.loan / 100 else if (stats.loan in 1..99) 1 else 0
 
+        stats.loan += if (stats.loan >= 100) stats.loan / 100 else if (stats.loan in 1..99) 1 else 0
+        ///////LOAN
         stats.loanPercent =
             if (stats.loan >= 80) stats.loan / 80 else if (stats.loan in 1..79) 1 else 0
         stats.loan -= stats.loanPercent
@@ -372,4 +302,5 @@ fun nextMonth(
         dao.updateYourStats(stats)
     }
 }
+
 

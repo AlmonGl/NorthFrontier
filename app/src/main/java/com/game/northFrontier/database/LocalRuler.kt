@@ -4,84 +4,28 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity()
-data class LocalRuler (
-        @PrimaryKey(autoGenerate = false)
-        val id: Int,
-        val rulerName: String
+data class LocalRuler(
+    @PrimaryKey(autoGenerate = false)
+    val id: Int,
+    val rulerName: String
 
-    ) {
-        var initiative = (0..10).random() //0 initiative never spend coffer
-        var civilCompetence = (1..10).random()
-        var seed = (1..15).random()
-        var embezzlement =arrayListOf(0,0,0,0,0,0,1,1,1,1,1,2,2,2,2,3,3,3,4,4,5,6).random() //decrease taxes
-        var description = "Traits are:"
-        ///SEED 1 - Stinginess
-        var addCivilShortageFromCoffer = seed != 1
+) {
+    var civUpEfficiency = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var milUpEfficiency = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var civUpkeepEff = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var milUpkeepEff = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var foodUpkeepEff = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var naturalTaxesEff = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var commodTaxesEff = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var extractionTaxesEff = arrayListOf(100, 100, 100, 105, 105, 110, 110, 115).random()
+    var tradersTaxesEff = arrayListOf(100,100,100,105,105,110,110,115).random()
+    var profTaxesEff = arrayListOf(100,100,100,105,105,110,110,115).random()
 
-        ///SEED 2 - Greed
-        var decreaseCofferIncoming = if (seed==2) (10..50).random() else 0
-
-        ///SEED 3 - Corruption
-        var fundsDecrease = if (seed==3) (10..50).random() else 0
-
-        ///SEED 4 Military enthusiast
-        var militaryEnthusiasm = seed==4
-
-        ///SEED 5 Climate adapting
-        var climateAdapting = seed == 5
-
-        ///SEED 6-7 Laws attitude
-        var lawsAttitude = if (seed==6) (1..2).random() else if (seed==7) (-2..-1).random() else 0
-
-        ///SEED 8 Traders attraction
-        var tradersAttraction = seed==8
-
-        ///SEED 9 Prof attraction
-        var profAttraction = seed==9
-
-        ///SEED 10 Agri attraction
-        var agriAttraction = seed==10
-
-        ///SEED 11 Commodity attraction
-        var commodityAttraction = seed==11
-
-        ///SEED 12 Extraction attraction
-        var extractionAttraction = seed==12
-
-        ///SEED 13 Religious//something with church
-        var religious = seed==13
-
-        ///SEED 14 Vigilant //something with raids resolve?
-        var vigilant = seed==14
-
-        //SEED 15 Cruel
-        var giveFromCofferIfStarvation = seed!=14
-
-
-
-
-        fun showFullInfo():String {
-               var s = "$id. $rulerName, "
-                when (seed) {
-                    1-> s+= "Stinginess"
-                    2-> s+= "Greed $decreaseCofferIncoming"
-                    3-> s+= "Corruption $fundsDecrease"
-                    4-> s+=  "Military enthusiast"
-                    5-> s+= "Climate adapting"
-                    6-> s+= "Lawful"
-                    7-> s+= "Perpetrator"
-                    8-> s+= "Traders attraction"
-                    9-> s+= "Prof attraction"
-                    10-> s+= "Agri attraction"
-                    11-> s+= "Commodity attraction"
-                    12-> s+= "Extraction attraction"
-                    13-> s+= "Religious"
-                    14-> s+= "Vigilant"
-                    15-> s+= "Cruel"
-
-
-                }
-                s+= ", $initiative init, $civilCompetence civ, embezzle $embezzlement"
-                return  s
-        }
+    fun showFullInfo(): String {
+        var s = "$id. $rulerName, "
+        s+= "\nTaxes eff: $tradersTaxesEff/$profTaxesEff/$extractionTaxesEff/$commodTaxesEff/$naturalTaxesEff"
+        s+= "\nUpkeep eff: $civUpkeepEff/$milUpkeepEff/$foodUpkeepEff"
+        s+= "\nUpgrades eff: $civUpEfficiency/$milUpEfficiency"
+        return s
+    }
 }

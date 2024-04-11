@@ -67,13 +67,15 @@ fun SquadManagingScreen(navController: NavController,
             modifier = Modifier.verticalScroll(ScrollState(0)) )
         Button(onClick = {
         lifecycleScope.launch {
-            val squad = dao.getSquadById(viewModel.selectedSquad)
-            squad.assingNewLeader()
-            val stats = dao.getYourStats()[0]
-            stats.gold-=25
-            viewModel.selectedSquadInfo = squad.showAllData()
-            dao.updateSquad(squad)
-            dao.updateYourStats(stats)
+            if ((viewModel.selectedSquad in viewModel.squadIdList)) {
+                val squad = dao.getSquadById(viewModel.selectedSquad)
+                squad.assingNewLeader()
+                val stats = dao.getYourStats()[0]
+                stats.gold -= 25
+                viewModel.selectedSquadInfo = squad.showAllData()
+                dao.updateSquad(squad)
+                dao.updateYourStats(stats)
+            }
         }
         }) {
             Text(text = "Hire new leader for ${viewModel.selectedSquad} (50 gold)")

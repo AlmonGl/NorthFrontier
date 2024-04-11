@@ -15,7 +15,7 @@ data class Location (
     var town: Boolean = false//(0..10).random() == 0 //fog 0
     var manor: Boolean = false//(0..5).random() == 0 //fog 0
     var locationLoyalty: Int = (50..70).random() //0-100 //fog 5
-    var locationCoffer: Int = (10..1000).random() //gold //fog 5
+
     var depleted = 0
 
     var workersNatural: Int = 0//(200..1000).random() //pop  //fog 1
@@ -27,18 +27,16 @@ data class Location (
     var militaryLvl: Int = 0//if (id in 1..5) (10..30).random() else (0..10).random() //0-100 //fog 3 //if id on frontier
     var militia: Int = 0//if (town) (10..20).random() else 0
     var feudalPower: Int = 0//if (manor) (50..100).random() else 0
-    var civilFunds: Int = 0 //gold //always 0 outside of nextMonth function
-    var militaryFunds: Int = 0 //gold //fog 4
+
     var fertility: Int = arrayListOf(1,1,1,1,1,1,2,2,2,3).random() //1-35 //fog 2
     var abundance: Int = arrayListOf(1,1,1,1,1,1,2,2,2,3).random() //1-3 //fog 2
     var climateLastYear: Int = arrayListOf(-5,-4,-3,-2,-2,-1,-1,-1,-1,0,0,0,0,0,0,1,1,1,1,2,2,3,4,5).random() //-5 to 5 //fog 1
     var barbarianRaids: Int = 0 //1-100 //fog 1
     var barbarianRaidsYearBefore: Int = 0 //0-100 //fog 1
-    var crimeInfluence: Int = (1..25).random() //0-100 //fog 4
-    var churchInfluence: Int = (40..80).random() //0-100 //fog 4
+
+
     var fogOfWar: Int = 5//0-5, 6 - unreachable
-    var plannedCivilFunds = 0 //fog 0
-    var plannedMilitaryFunds = 0 //fog 0
+
     var taxesLastYear = 0 //fog 0
     var taxesBeforeLastYear = 0 //fog 0
     var incomingBarbarians = 0 ////fog 6
@@ -48,16 +46,25 @@ data class Location (
     var commoditiesTaxesLastYear = 0 //fog 2
     var tradeTaxesLastYear = 0 //fog 2
     var professionsTaxesLastYear = 0 //fog 2
+    var upkeepLastYear = 0 //fog 0
+    var upkeepBeforeLastYear = 0 //fog 0
+    var civUp = false //fog 6
+    var civUpFunds = 0 //fog 6
+    var milUp = false //fog 6
+    var milUpFunds = 0 //fog 6
+    var civUpkeep = 0 //fog 4
+    var milUpkeep = 0 //fog 4
+    var foodUpkeep = 0 //fog 4
 
     fun showAllData(): String{
         var s = "Location: $locationName, ID_$id,\n ruled by $rulerName."
         if (town) s+="\n Town with $militia militia"
         if (manor) s+="\n Manor with $feudalPower solders"
-        s+= " \n\n coffer: $locationCoffer. Loyalty: $locationLoyalty"
+        s+= " \n\n  Loyalty: $locationLoyalty"
         s+="\n Workers: Nat $workersNatural Ex $workersExtraction Prof $workersProfs Trade $workersTraders Comm $workersCommodities ALL: $workersAll"
-        s+="\n Civlvl $civilLvl Millvl $militaryLvl civFunds $civilFunds Milfunds $militaryFunds"
+        s+="\n Civlvl $civilLvl Millvl $militaryLvl"
         s+= "\n Fert $fertility Abun $abundance Climate $climateLastYear Fog $fogOfWar"
-        s+= "\n Planned civ/mil funds: $plannedCivilFunds/$plannedMilitaryFunds."
+
         s+= "\n Taxes last year/before last year $taxesLastYear/$taxesBeforeLastYear"
         s+= "\n Taxes natural: $naturalTaxesLastYear. Taxes extraction: $extractionTaxesLastYear."
         s+= "\n Taxes trade: $tradeTaxesLastYear. Taxes prof: $professionsTaxesLastYear."
@@ -74,6 +81,8 @@ data class Location (
         if (manor) s += "\n Manor with $feudalPower solders"
         s += "\n\n Taxes last year $taxesLastYear gold"
         s += "\n Taxes before last year $taxesBeforeLastYear gold"
+        s += "\n\n Upkeep last year $upkeepLastYear gold"
+        s += "\n Upkeep before last year $upkeepBeforeLastYear gold"
 
         ///FOG==1
         if (fogOfWar >= 1) {
@@ -87,7 +96,7 @@ data class Location (
         ///FOG==2
         if (fogOfWar >= 2) {
             s += "\n\n Fertility: $fertility \n Natural abundance: $abundance "
-            s += "\n\n Base taxes last year: $taxesLastYearBase "
+            s += "\n "
             s += "\n Taxes natural: $naturalTaxesLastYear gold.\n Taxes extraction: $extractionTaxesLastYear gold."
             s += "\n Taxes trade: $tradeTaxesLastYear gold.\n Taxes prof: $professionsTaxesLastYear gold."
             s += "\n Taxes commodities: $commoditiesTaxesLastYear gold. "
@@ -98,12 +107,12 @@ data class Location (
         }
         ///FOG==4
         if (fogOfWar >= 4) {
-            s += "\n\n Stored military funds: $militaryFunds gold"
-            s+="\n Crime :$crimeInfluence %\n Church: $churchInfluence %"
+            s += "\n\n Upkeep: civ/mil/food: $civUpkeep/$milUpkeep/$foodUpkeep"
+
         }
         ///FOG==5
         if (fogOfWar >= 5) {
-            s += " \n\n Coffer: $locationCoffer gold. \nLoyalty: $locationLoyalty% ."
+            s += " \n \nLoyalty: $locationLoyalty% ."
         }
 
 
@@ -201,17 +210,17 @@ data class Location (
         if (seed in 95..100) {
             civilLvl = (20..40).random()
             militaryLvl = (15..35).random()
-            locationCoffer+= (1000..3000).random()
+
         }
-        plannedCivilFunds = (workersExeptNatural * 1.2).toInt()
-        plannedMilitaryFunds = militaryLvl
+
     }
     val workersAll: Int
         get() = workersNatural+workersCommodities+workersExtraction+workersProfs+workersTraders
     val workersExeptNatural: Int
         get() = workersCommodities+workersExtraction+workersProfs+workersTraders
-    val taxesLastYearBase: Int
-        get() = naturalTaxesLastYear+extractionTaxesLastYear+commoditiesTaxesLastYear+tradeTaxesLastYear+professionsTaxesLastYear
+
+    val totalUpkeep: Int
+        get() = foodUpkeep+civUpkeep+milUpkeep
     private fun deplete() {
         workersNatural=0
         workersExtraction=0
@@ -223,8 +232,7 @@ data class Location (
         manor=false
         militia=0
         feudalPower=0
-        plannedCivilFunds=0
-        plannedMilitaryFunds=0
+
     }
     fun decreasePop(x1: Int) {
         var x =x1
@@ -268,6 +276,16 @@ data class Location (
             depleted=1
             deplete()
         }
+    }
+    fun changeMilLvl(x: Int) {
+        militaryLvl+=x
+        if (militaryLvl<1) militaryLvl = 1
+        if (militaryLvl>100) militaryLvl = 100
+    }
+    fun changeCivLvl(x: Int) {
+        civilLvl+=x
+        if (civilLvl<1) civilLvl = 1
+        if (civilLvl>100) civilLvl = 100
     }
 }
 

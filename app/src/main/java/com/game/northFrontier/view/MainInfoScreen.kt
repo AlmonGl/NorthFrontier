@@ -117,25 +117,7 @@ fun MainInfoScreen(
             ) {
                 Text(text = "Map screen")
             }
-            Button(
-                onClick =
-                {
-                    lifecycleScope.launch {
-                    dao.getLocation().forEach {
-                        viewModel.locationsCivUpkeep[it.id]=it.plannedCivilFunds
-                        viewModel.locationsMilUpkeep[it.id]=it.plannedMilitaryFunds
-                    }
 
-                }
-                    viewModel.civUpkeepChange=0
-                    viewModel.milUpkeepChange=0
-                    navController.navigate(Screen.Upkeep.route)
-
-
-                }
-            ) {
-                Text(text = "Upkeep")
-            }
         }
         Row {
             Button(
@@ -333,19 +315,14 @@ fun InfoButtons(lifecycleScope: LifecycleCoroutineScope, dao: LocationsDao, view
             lifecycleScope.launch {
                 val squadDislocation = dao.getSquadsLocations()
 
-                dao.getLocation().forEach {
-                    viewModel.locationsCivUpkeep[it.id]=it.plannedCivilFunds
-                    viewModel.locationsMilUpkeep[it.id]=it.plannedMilitaryFunds
-                }
+
                 viewModel.text1 = "Your stats: ${dao.getYourStats()[0].showAllData()} "
                 viewModel.text1+="\n\nTotal squads cost: ${viewModel.squadsSalary}"
                 viewModel.text1+="\nSquads in: ${squadDislocation.sorted()}"
-                viewModel.text1+="\n\n Civ upkeep last month: ${viewModel.locationsCivUpkeep.sum()}"
-                viewModel.text1+="\n Mil upkeep last month: ${viewModel.locationsMilUpkeep.sum()}"
+
                 //viewModel.text1 += "\n Enemy stats: ${dao.getEnemyStats()[0].showAllData()}"
-                viewModel.text1+="\n\nReport last month: \n ${viewModel.rulersActionsMonthBeforeLast}"
-                viewModel.text1+="\n\n${viewModel.locationWithCivDec}"
-                viewModel.text1+="\n${viewModel.locationWithMilDec}"
+
+
                 viewModel.text1+="\n${viewModel.raidsReportBefore}"
                 viewModel.text1+="\n${viewModel.thisTurnReports}"
 

@@ -61,12 +61,7 @@ fun SetupNavGraph(
         {
             LocationsScreen(navController,lifecycleScope,viewModel,dao,context)
         }
-        composable(
-            route = Screen.Upkeep.route
-        )
-        {
-            UpkeepScreen(navController,lifecycleScope,viewModel,dao,context)
-        }
+
         composable(
             route = Screen.SquadManager.route
         )
@@ -85,6 +80,12 @@ fun SetupNavGraph(
         )
         {
             RulersManagingScreen(navController,lifecycleScope,viewModel,dao,context)
+        }
+        composable(
+            route = Screen.LocationTaxes.route
+        )
+        {
+            LocationTaxesScreen(navController,lifecycleScope,viewModel,dao)
         }
     }
 
