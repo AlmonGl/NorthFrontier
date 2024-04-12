@@ -111,6 +111,7 @@ fun SquadManagingScreen(navController: NavController,
                 updateSquadViewList(lifecycleScope, dao, viewModel)
                 navController.navigate(Screen.SquadManager.route)
             }
+            viewModel.locationsWithSquads = dao.getSquadsLocations().toMutableList()
         } }) {
             Text(text = "Delete ${viewModel.selectedSquad} squad")
         }

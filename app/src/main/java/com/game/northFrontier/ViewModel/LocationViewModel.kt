@@ -37,8 +37,10 @@ class LocationViewModel(): ViewModel() {
     var currentYear = 0
     var locAttacked = ""
 
-
-
+    val locationsWithManors = mutableListOf<Int>()
+    val locationsWithTowns = mutableListOf<Int>()
+    var locationsWithSquads = mutableListOf<Int>()
+    var locationsDepleted = mutableListOf<Int>()
 
     var raidsReport = "Rumors about barbarian raids:"
     var raidsReportBefore = ""
@@ -54,11 +56,11 @@ class LocationViewModel(): ViewModel() {
     var currentTaxesLocId = 1
     var currentLocationTotalTaxes = 0
     var listOfLocsToTax = mutableListOf<Int>()
-    var foodUpkeep by  mutableIntStateOf(0)
+    var foodUpkeep by  mutableIntStateOf(100)
     var foodUpkeepValue = 0
-    var milUpkeep by  mutableIntStateOf(0)
+    var milUpkeep by  mutableIntStateOf(100)
     var milUpkeepValue = 0
-    var civUpkeep by  mutableIntStateOf(0)
+    var civUpkeep by  mutableIntStateOf(100)
     var civUpkeepValue = 0
     var civUp by  mutableStateOf(false)
     var civUpValue= 0

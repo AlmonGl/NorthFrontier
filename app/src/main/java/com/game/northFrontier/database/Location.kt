@@ -232,12 +232,12 @@ data class Location (
         manor=false
         militia=0
         feudalPower=0
-
+        depleted=1
     }
     fun decreasePop(x1: Int) {
         var x =x1
         if (x>= workersAll) {
-            depleted=1
+
             deplete()
             return
         }
@@ -273,7 +273,7 @@ data class Location (
             workersTraders-=x
             return
         } else {
-            depleted=1
+
             deplete()
         }
     }

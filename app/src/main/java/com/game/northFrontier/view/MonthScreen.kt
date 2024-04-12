@@ -55,7 +55,7 @@ fun MonthScreen(navController: NavController,
                 Text(text = "Leave me for now")
             }
         }
-        Text(text = viewModel.listOfLocsToTax.toString())
+
         if (viewModel.currentMonth==1) {
             Button(onClick = {
 

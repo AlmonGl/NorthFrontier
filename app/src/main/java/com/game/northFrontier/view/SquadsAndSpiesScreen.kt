@@ -62,7 +62,9 @@ fun SquadsAndSpiesScreen(
                 lifecycleScope.launch {
                 val squad: Squad = dao.getSquadById(viewModel.selectedSquad)
                 squad.locationId=viewModel.selectedLocationId
+
                 dao.updateSquad(squad)
+                viewModel.locationsWithSquads = dao.getSquadsLocations().toMutableList()
                 }
             }
         }) {

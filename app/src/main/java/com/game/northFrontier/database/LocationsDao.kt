@@ -23,6 +23,8 @@ interface LocationsDao {
     suspend fun getRulersOnLocations(): List<String>
     @Query("SELECT id FROM Location WHERE depleted = '0'")
     suspend fun getNotDepletedLocationsIds() : List<Int>
+    @Query("SELECT id FROM Location WHERE depleted = '1'")
+    suspend fun getDepletedLocationsIds() : List<Int>
     @Query("SELECT * FROM Location WHERE depleted = '0'")
     suspend fun getNotDepletedLocations() : List<Location>
     @Insert(onConflict = OnConflictStrategy.REPLACE)

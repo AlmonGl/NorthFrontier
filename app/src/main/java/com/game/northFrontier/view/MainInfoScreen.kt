@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -268,6 +270,7 @@ fun LocationCard(
     dao: LocationsDao,
     id: Int
 ) {
+
     Box(
         modifier = Modifier
             .width(80.dp)
@@ -291,6 +294,39 @@ fun LocationCard(
     )
     {
         Text(text = " $id ", fontSize = 34.sp, fontFamily = FontFamily.Cursive)
+
+
+            if (id in viewModel.locationsDepleted) {
+            Image(
+                painter = painterResource(id = R.drawable.column),
+                contentDescription = "",
+                modifier = Modifier.size(30.dp, 30.dp).offset((-20).dp, (-18).dp)
+            )
+
+            }
+            if (id in viewModel.locationsWithManors) {
+                Image(
+                    painter = painterResource(id = R.drawable.castle),
+                    contentDescription = "",
+                    modifier = Modifier.size(30.dp, 30.dp).offset(18.dp,18.dp)
+                )
+
+            }
+            if (id in viewModel.locationsWithTowns) {
+                Image(
+                    painter = painterResource(id = R.drawable.townhall),
+                    contentDescription = "",
+                    modifier = Modifier.size(30.dp, 30.dp).offset(18.dp,18.dp)
+                )
+
+            }
+            if (id in viewModel.locationsWithSquads) {
+                Image(
+                    painter = painterResource(id = R.drawable.shield),
+                    contentDescription = "",
+                    modifier = Modifier.size(30.dp, 30.dp).offset((-20).dp, 20.dp)
+                )
+            }
 
     }
 }

@@ -51,7 +51,7 @@ fun LocationTaxesScreen(
     Column(modifier = Modifier
         .fillMaxSize()
         .verticalScroll(ScrollState(0))) {
-        Text(text = viewModel.listOfLocsToTax.toString())
+
 
         Text(text = "Sir, we, ${viewModel.currentTaxesLocId} collect ${viewModel.currentLocationTotalTaxes} this year.")
         Text(text = "Please, allow us to spend some of it on our needs!")
@@ -223,6 +223,19 @@ fun LocationTaxesScreen(
         x-= viewModel.milUpkeepValue*viewModel.milUpkeep/100
         Text(text = "Total change to our coffer: ${x}")
         Button(onClick = {
+            viewModel.foodUpkeep=0
+            viewModel.milUpkeep=0
+            viewModel.civUpkeep=0
+            viewModel.milUp=false
+            milUp=false
+            viewModel.civUp=false
+            civUp=false
+        })
+            {
+            Text(text = "Set all to 0")
+        }
+
+        Button(onClick = {
             lifecycleScope.launch {
                 calculateLocTaxes(
                     lifecycleScope,
@@ -266,7 +279,7 @@ fun calculateLocTaxes(
             75-> location.decreasePop(location.workersAll/50)
         }
         goldSpent+= (viewModel.foodUpkeepValue * viewModel.foodUpkeep) / 100
-        viewModel.foodUpkeep=0
+        viewModel.foodUpkeep=100
         when (viewModel.civUpkeep) {
             0-> location.changeCivLvl(-10)
             25-> location.changeCivLvl(-3)
@@ -274,7 +287,7 @@ fun calculateLocTaxes(
             75-> location.changeCivLvl(-1)
         }
         goldSpent+= (viewModel.civUpkeep * viewModel.civUpkeep) / 100
-        viewModel.civUpkeep=0
+        viewModel.civUpkeep=100
         when (viewModel.milUpkeep) {
             0-> location.changeMilLvl(-10)
             25-> location.changeMilLvl(-3)
@@ -282,7 +295,7 @@ fun calculateLocTaxes(
             75-> location.changeMilLvl(-1)
         }
         goldSpent+= (viewModel.milUpkeep * viewModel.milUpkeep) / 100
-        viewModel.milUpkeep=0
+        viewModel.milUpkeep=100
         if (viewModel.milUp) {
             location.changeMilLvl(1)
             goldSpent+=viewModel.milUpValue
@@ -300,8 +313,8 @@ fun calculateLocTaxes(
         val stats = dao.getYourStats()[0]
         location.upkeepBeforeLastYear = location.upkeepLastYear
         location.upkeepLastYear = goldSpent
-        stats.taxesLastYear+=viewModel.currentLocationTotalTaxes-goldSpent
-        stats.gold+=viewModel.currentLocationTotalTaxes-goldSpent
+        stats.taxesLastYear+=viewModel.currentLocationTotalTaxes
+        stats.gold+= (viewModel.currentLocationTotalTaxes-goldSpent)
         stats.upkeepLastYear+=goldSpent
         dao.updateLocation(location)
         dao.updateYourStats(stats)

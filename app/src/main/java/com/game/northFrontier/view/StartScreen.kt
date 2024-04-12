@@ -18,6 +18,7 @@ import com.game.northFrontier.R
 import com.game.northFrontier.ViewModel.LocationViewModel
 import com.game.northFrontier.database.LocationsDao
 import com.game.northFrontier.database.generateAll
+import kotlinx.coroutines.launch
 
 @Composable
 fun StartScreen(
@@ -41,6 +42,7 @@ fun StartScreen(
             fontSize = MaterialTheme.typography.headlineLarge.fontSize,
             modifier = Modifier.clickable {
                 if (!viewModel.gameEnded) {
+                    setMap(viewModel, dao, lifecycleScope)
                     navController.navigate(Screen.MainInfo.route)
                 }
 
@@ -60,5 +62,16 @@ fun StartScreen(
                 }
 
             )
+    }
+}
+
+fun setMap(viewModel: LocationViewModel,dao: LocationsDao, lifecycleScope: LifecycleCoroutineScope) {
+    lifecycleScope.launch {
+        dao.getLocation().forEach {
+            if (it.manor) viewModel.locationsWithManors.add(it.id)
+            if (it.town) viewModel.locationsWithTowns.add(it.id)
+        }
+        viewModel.locationsWithSquads = dao.getSquadsLocations().toMutableList()
+        viewModel.locationsDepleted = dao.getDepletedLocationsIds().toMutableList()
     }
 }

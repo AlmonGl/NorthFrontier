@@ -45,6 +45,8 @@ fun generateAll(
         locations.forEach {
             it.generate()
             dao.insertLocation(it)
+            if (it.manor) viewModel.locationsWithManors.add(it.id)
+            if (it.town) viewModel.locationsWithTowns.add(it.id)
         }
         localRulers.forEach { dao.insertLocalRuler(it) }
         squads.forEach {
@@ -68,6 +70,7 @@ fun generateAll(
 
 
     }
+
 }
 
 @Transaction
@@ -124,6 +127,8 @@ fun nextMonth(
             stats.yearNumber += 1
             stats.taxesBeforeLastYear = stats.taxesLastYear
             stats.taxesLastYear = 0
+            stats.upkeepBeforeLastYear = stats.upkeepLastYear
+            stats.upkeepLastYear=0
         }
         viewModel.currentMonth = stats.monthNumber
         viewModel.currentYear = stats.yearNumber
@@ -208,8 +213,7 @@ fun nextMonth(
             }
             ///UPKEEP
             if (stats.monthNumber == 1) {
-                stats.upkeepBeforeLastYear = stats.upkeepLastYear
-                stats.upkeepLastYear=0
+
                 ///MILITARY
                 it.milUpkeep = (it.militaryLvl*12*ruler.milUpkeepEff)/100
                 ///FOOD
@@ -300,6 +304,7 @@ fun nextMonth(
             navController.navigate(Screen.End.route)
         }
         dao.updateYourStats(stats)
+        viewModel.locationsDepleted = dao.getDepletedLocationsIds().toMutableList()
     }
 }
 
