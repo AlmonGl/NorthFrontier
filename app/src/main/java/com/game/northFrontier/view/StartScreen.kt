@@ -28,7 +28,7 @@ fun StartScreen(
     dao: LocationsDao,
     context: Context
 ) {
-    val im = context.getDrawable(R.drawable.im2)
+    val im = context.getDrawable(R.drawable.im3)
     BackGround(id = 1)
     Column(
         modifier = Modifier.fillMaxSize(),

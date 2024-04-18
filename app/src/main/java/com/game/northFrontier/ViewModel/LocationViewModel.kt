@@ -12,12 +12,7 @@ import com.game.northFrontier.database.Location
 
 
 class LocationViewModel(): ViewModel() {
-    var imageID by mutableIntStateOf(1)
-        private set
-    var backgroundColor by mutableStateOf(Color.Blue)
-        private set
-    var uri: Uri? by mutableStateOf(null)
-        private set
+
     var locationID: String by mutableStateOf("")
 
     var locationsID by mutableStateOf(listOf(0))
@@ -29,10 +24,7 @@ class LocationViewModel(): ViewModel() {
     var selectedRulerInfo: String by mutableStateOf("")
     var selectedRulerName: String by mutableStateOf("")
     var rulersFreeIdList: List<Int> = listOf()
-    fun changeBGcolor(){
-        backgroundColor = Color.Red
 
-    }
     var currentMonth = 0
     var currentYear = 0
     var locAttacked = ""
