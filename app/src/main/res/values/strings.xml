@@ -33,24 +33,14 @@
             <item>Whitemoor</item>
         </string-array>
     <string-array name="leader_names">
-        <item>Agmundr</item>
+
         <item>Sigmund</item>
         <item>Brand</item>
-        <item>Mars</item>
-        <item>Thord</item>
-        <item>Bodvar</item>
-        <item>Gisli</item>
-        <item>Ospak</item>
-        <item>Grimar</item>
-        <item>Hallbjorn</item>
-        <item>Thorleik</item>
-        <item>Ormar</item>
-        <item>Swaebhard</item>
+
+        <item>Brendon</item>
         <item>Fordwin</item>
-        <item>Alfwold</item>
-        <item>Merewala</item>
-        <item>Wilsige</item>
-        <item>Cynred</item>
+        <item>Alfold</item>
+        <item>Daevon</item>
         <item>Letard</item>
         <item>Cynsige</item>
         <item>Berhtric</item>
