@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Location::class, LocalRuler::class, Squad::class, YourStats::class, EnemyStats::class], version = 1)
+@Database(entities = [Location::class, LocalRuler::class, Squad::class, YourStats::class, EnemyStats::class], version = 2)
 abstract class AppDatabase: RoomDatabase() {
     abstract val locationDao: LocationsDao
 
