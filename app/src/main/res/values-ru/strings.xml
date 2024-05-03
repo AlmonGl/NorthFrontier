@@ -1,0 +1,76 @@
+<resources>
+    <string name="app_name">Northern Frontier</string>
+
+
+        <string-array name="location_names">
+            <item>Шиверкрест</item>
+            <item>Термбелл</item>
+            <item>Crystalmond</item>
+            <item>Witvault</item>
+            <item>Solstice</item>
+            <item>Witvault</item>
+            <item>Chillis</item>
+            <item>Colddrift</item>
+            <item>Frostmoor</item>
+            <item>Wolfdrift</item>
+            <item>Thawhelm</item>
+            <item>Cloudhand</item>
+            <item>Glace</item>
+            <item>Lanche</item>
+            <item>Frostbite</item>
+            <item>Yce</item>
+            <item>Mitten</item>
+            <item>Winterreach</item>
+            <item>Sleat</item>
+            <item>Northfall</item>
+            <item>Stormmire</item>
+            <item>Moonbreach</item>
+            <item>Yceham</item>
+            <item>Driftglen</item>
+            <item>Wolfville</item>
+            <item>Hiver</item>
+            <item>Fyre</item>
+            <item>Whitemoor</item>
+        </string-array>
+    <string-array name="leader_names">
+        <item>Sigmund</item>
+        <item>Brand</item>
+        <item>Brendon</item>
+        <item>Fordwin</item>
+        <item>Alfold</item>
+        <item>Daevon</item>
+        <item>Letard</item>
+        <item>Jeremy</item>
+        <item>Myles</item>
+        <item>Anthonie</item>
+        <item>Nycholas</item>
+        <item>Esdras</item>
+        <item>Gerard</item>
+        <item>Cleeve</item>
+        <item>Allen</item>
+        <item>Sybyll</item>
+        <item>Sarah</item>
+        <item>Barnard</item>
+        <item>Leonard</item>
+        <item>Henry</item>
+        <item>Richard</item>
+        <item>Valentine</item>
+        <item>Vincent</item>
+        <item>David</item>
+        <item>Edmund</item>
+        <item>Adam</item>
+        <item>Luke</item>
+        <item>Roland</item>
+        <item>William</item>
+        <item>Timothy</item>
+        <item>Kamil</item>
+        <item>Farraj</item>
+        <item>Musa</item>
+        <item>Kamal</item>
+        <item>Yusuf</item>
+        <item>Ibrahim</item>
+        <item>Abbas</item>
+        <item>Mansur</item>
+    </string-array>
+
+</resources>

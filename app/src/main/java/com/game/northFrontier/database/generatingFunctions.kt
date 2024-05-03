@@ -28,7 +28,7 @@ fun generateAll(
         context.resources.getStringArray(R.array.location_names).toMutableList()
     val arrayOfLeaderNames = context.resources.getStringArray(R.array.leader_names).toMutableList()
     arrayOfLeaderNames.shuffle()
-    arrayOfLocationNames.shuffle()
+
     val locations = Array(16) { i -> Location(i + 1, arrayOfLocationNames[i], "null") }
     val localRulers = Array(20) { i -> LocalRuler(i + 1, arrayOfLeaderNames[i]) }
 
